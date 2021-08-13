@@ -226,7 +226,7 @@ export default class TmPage {
 			overview: `https://tsukimangas.com/obra/${data.id}/${data.url}`,
 			cover: `https://tsukimangas.com/imgs/${data.poster}`,
 			banner:
-				data.cover != 'nobackground.jpg'
+				data.cover !== 'nobackground.jpg'
 					? `https://tsukimangas.com/imgs/${data.cover}`
 					: null
 		};

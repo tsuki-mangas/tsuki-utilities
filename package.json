@@ -1,55 +1,143 @@
 {
-  "version": "0.1.0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=12"
-  },
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
-  },
-  "peerDependencies": {},
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "tsuki-utilities",
-  "author": "rdx",
-  "module": "dist/tsuki-utilities.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/tsuki-utilities.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/tsuki-utilities.esm.js",
-      "limit": "10 KB"
-    }
-  ],
-  "devDependencies": {
-    "@size-limit/preset-small-lib": "^5.0.2",
-    "husky": "^7.0.1",
-    "size-limit": "^5.0.2",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.3.0",
-    "typescript": "^4.3.5"
-  }
+	"version": "0.1.0",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=14"
+	},
+	"scripts": {
+		"start": "tsdx watch",
+		"build": "tsdx build",
+		"test": "tsdx test",
+		"lint": "tsdx lint",
+		"prepare": "tsdx build",
+		"size": "size-limit",
+		"analyze": "size-limit --why"
+	},
+	"peerDependencies": {},
+	"husky": {
+		"hooks": {
+			"pre-commit": "tsdx lint"
+		}
+	},
+	"eslintConfig": {
+		"root": true,
+		"parser": "@typescript-eslint/parser",
+		"parserOptions": {
+			"sourceType": "module",
+			"project": "tsconfig.json"
+		},
+		"plugins": [
+			"@typescript-eslint",
+			"prettier"
+		],
+		"rules": {
+			"quotes": "off",
+			"no-var": "warn",
+			"func-style": [
+				"error",
+				"declaration"
+			],
+			"no-case-declarations": "off",
+			"no-control-regex": "off",
+			"no-unused-vars": "off",
+			"prefer-arrow-callback": "error",
+			"one-var": [
+				"warn",
+				"consecutive"
+			],
+			"curly": [
+				"warn",
+				"multi"
+			],
+			"@typescript-eslint/array-type": [
+				"warn",
+				{
+					"default": "array-simple"
+				}
+			],
+			"@typescript-eslint/await-thenable": [
+				"warn"
+			],
+			"@typescript-eslint/explicit-function-return-type": [
+				"warn"
+			],
+			"@typescript-eslint/explicit-member-accessibility": [
+				"warn",
+				{
+					"accessibility": "no-public"
+				}
+			],
+			"@typescript-eslint/interface-name-prefix": [
+				"off"
+			],
+			"@typescript-eslint/no-explicit-any": [
+				"error"
+			],
+			"@typescript-eslint/no-require-imports": [
+				"warn"
+			],
+			"@typescript-eslint/no-unnecessary-type-assertion": [
+				"warn"
+			],
+			"@typescript-eslint/no-unused-vars": [
+				"warn"
+			],
+			"@typescript-eslint/prefer-as-const": [
+				"warn"
+			],
+			"@typescript-eslint/prefer-for-of": [
+				"warn"
+			],
+			"@typescript-eslint/prefer-reduce-type-parameter": [
+				"warn"
+			],
+			"@typescript-eslint/prefer-string-starts-ends-with": [
+				"warn"
+			],
+			"@typescript-eslint/promise-function-async": [
+				"error"
+			],
+			"@typescript-eslint/unbound-method": "off",
+			"prettier/prettier": "warn"
+		},
+		"extends": [
+			"plugin:@typescript-eslint/recommended",
+			"plugin:prettier/recommended"
+		]
+	},
+	"prettier": {
+		"printWidth": 80,
+		"trailingComma": "none",
+		"useTabs": true,
+		"tabWidth": 2,
+		"endOfLine": "auto",
+		"singleQuote": true
+	},
+	"name": "tsuki-utilities",
+	"author": "rdx",
+	"module": "dist/tsuki-utilities.esm.js",
+	"size-limit": [
+		{
+			"path": "dist/tsuki-utilities.cjs.production.min.js",
+			"limit": "10 KB"
+		},
+		{
+			"path": "dist/tsuki-utilities.esm.js",
+			"limit": "10 KB"
+		}
+	],
+	"devDependencies": {
+		"@size-limit/preset-small-lib": "^5.0.2",
+		"husky": "^7.0.1",
+		"size-limit": "^5.0.2",
+		"tsdx": "^0.14.1",
+		"tslib": "^2.3.0",
+		"typescript": "^4.3.5"
+	}
 }

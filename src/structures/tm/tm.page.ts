@@ -198,7 +198,7 @@ export default class TmPage {
 	};
 
 	/**
-	 *
+	 * Constructor da classe.
 	 * @param data Dados recebidos (objeto) ao chamar a API.
 	 * @param beautify Embelezar os dados?
 	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
@@ -313,10 +313,9 @@ export default class TmPage {
 	}
 }
 
-// ---------------------------------------------------------------------- \\
-
 /**
  * Objeto recebido ao chamar a API.
+ * @private
  * @since 0.1.0
  */
 type ReceivedFromApi = {

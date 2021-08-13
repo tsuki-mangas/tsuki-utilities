@@ -25,10 +25,10 @@ jobs:
       - name: Lint
         run: yarn lint
 
-        env:
-          TM_BB_TOKEN: ${{secrets.TM_BB_TOKEN}}
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=2
+        env:
+          TM_BB_TOKEN: ${{secrets.TM_BB_TOKEN}}
 
       - name: Build
         run: yarn build

@@ -32,6 +32,7 @@
 			"sourceType": "module",
 			"project": "tsconfig.json"
 		},
+		"ignorePatterns": "test",
 		"plugins": [
 			"@typescript-eslint",
 			"prettier"

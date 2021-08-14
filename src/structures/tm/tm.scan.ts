@@ -38,7 +38,7 @@ export default class TmScan {
 		 */
 		discord: string | null;
 		/**
-		 * Link da página do facebook da scan.
+		 * Link da página do Facebook da scan.
 		 * @since 0.1.0
 		 */
 		facebook: string | null;

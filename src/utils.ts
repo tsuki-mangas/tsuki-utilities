@@ -1,6 +1,8 @@
 import { AvailableWebsites, AvailableWebsitesShort } from './types';
 import { IncomingMessage } from 'http';
 import { request } from 'https';
+import { readFile } from 'fs/promises';
+import { dirname, join } from 'path';
 
 const headers = {},
 	maxRequestsPerSecond = 10;
@@ -122,6 +124,38 @@ function short2long(website: AvailableWebsitesShort): AvailableWebsites {
 }
 
 /**
+ * Lê e define environment variables de um .env no root folder.
+ * Ele serve para o desenvolvimento, onde o token de block-bypass da Tsuki Mangás é guardado.
+ * Se não há nenhum ficheiro .env é porque o ambiente é de produção, então é esperado que
+ * o token seja definido na aplicação usando este package.
+ * @private
+ * @returns Nada.
+ * @since 0.1.0
+ */
+async function checkEnvFile(): Promise<void> {
+	/**
+	 * O encoding é necessário para o fs retornar uma string e não um buffer.
+	 */
+	const fileContent = await readFile(join(dirname(__dirname), '.env'), {
+		encoding: 'utf8'
+	}).catch(() => null);
+	if (!fileContent) return;
+
+	const envVariables = fileContent.split('\n');
+	for (let envVariable of envVariables.values()) {
+		/**
+		 * Seria melhor dar split, mas há o risco da key conter um '='.
+		 * Por tanto, para não ter que tratar desse problema, simplesmente trocamos
+		 * o primeiro '=' por ';;;', já que a chance da key conter ';;;' é extremamente baixa.
+		 */
+		envVariable = envVariable.replace('=', ';;;');
+		const splitted = envVariable.split(';;;');
+
+		process.env[splitted[0]] = splitted[1];
+	}
+}
+
+/**
  * Trata um erro recebido por alguma API.
  * @private
  * @param website Iniciais do site.
@@ -176,8 +210,11 @@ export async function apiRequest(
 	additionalHeaders = {},
 	debug = true
 ): Promise<unknown> {
-	if (website === 'tm' && !process.env.TM_BB_TOKEN)
-		throw new Error('Token de block-bypass da Tsuki Mangás inválido!');
+	if (website === 'tm') {
+		await checkEnvFile();
+		if (!process.env.TM_BB_TOKEN)
+			throw new Error('Token de block-bypass da Tsuki Mangás inválido!');
+	}
 
 	activeRequests++;
 	if (activeRequests >= maxRequestsPerSecond)

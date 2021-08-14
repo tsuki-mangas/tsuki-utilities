@@ -206,7 +206,7 @@ export default class TmUser {
  * @private
  * @since 0.1.0
  */
-type ReceivedFromApi = {
+export type ReceivedFromApi = {
 	id: number;
 	username: string;
 	name: string;

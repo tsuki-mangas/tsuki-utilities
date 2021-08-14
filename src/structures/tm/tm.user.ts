@@ -1,5 +1,9 @@
 import { apiRequest, format } from '../../utils';
 
+/**
+ * Classe de interação com um usuário da Tsuki Mangás.
+ * @since 0.1.0
+ */
 export default class TmUser {
 	/**
 	 * Id do usuário.
@@ -186,7 +190,7 @@ export default class TmUser {
 
 	/**
 	 * Obter uma usuário da Tsuki Mangás por nome de usuário.
-	 * @param id Nome de usuário.
+	 * @param username Nome de usuário.
 	 * @returns Retorna esta classe preenchida com as informações do usuário.
 	 * @since 0.1.0
 	 */

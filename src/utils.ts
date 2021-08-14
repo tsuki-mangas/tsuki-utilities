@@ -282,6 +282,7 @@ export async function apiRequest(
  * @private
  * @param input Alguma string.
  * @returns Versão slugged da string.
+ * @since 0.1.0
  */
 export function slugify(input: string): string {
 	return input

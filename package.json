@@ -123,6 +123,9 @@
 		"endOfLine": "auto",
 		"singleQuote": true
 	},
+	"jest": {
+		"testTimeout": 15000
+	},
 	"name": "tsuki-utilities",
 	"author": "rdx",
 	"module": "dist/tsuki-utilities.esm.js",

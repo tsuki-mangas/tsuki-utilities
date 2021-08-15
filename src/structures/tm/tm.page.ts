@@ -223,7 +223,7 @@ export default class TmPage {
 		};
 
 		this.links = {
-			trailer: data.trailer.length
+			trailer: data.trailer?.length
 				? `https://www.youtube.com/watch?v=${data.trailer}`
 				: null,
 			slug: data.url,

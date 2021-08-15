@@ -13,10 +13,10 @@ describe('classe TmPage', () => {
 
 	it(`método get - Ids: ${workingPagesId.join(', ')}`, async () => {
 		for (const id of workingPagesId.values())
-			await expect(TmPage.get(id)).resolves.toHaveProperty('id');
+			await expect(TmPage.get(id)).resolves.toHaveProperty('ids');
 	});
 
-	it(`método get - Ids: ${workingPagesId.join(', ')}`, async () => {
+	it(`método get - Ids: ${deletedPagesId.join(', ')}`, async () => {
 		for (const id of deletedPagesId.values())
 			await expect(TmPage.get(id)).rejects.toThrow(Error);
 	});

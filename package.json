@@ -124,7 +124,7 @@
 		"singleQuote": true
 	},
 	"jest": {
-		"testTimeout": 15000
+		"testTimeout": 120000
 	},
 	"name": "tsuki-utilities",
 	"author": "rdx",

@@ -276,25 +276,3 @@ export async function apiRequest(
 		req.end();
 	});
 }
-
-/**
- * Transforma uma string em um slug.
- * Exemplo:
- * - 'One Piece' vira 'one-piece'
- * - 'Drope Scan' vira 'drope-scan'
- * @private
- * @param input Alguma string.
- * @returns Versão slugged da string.
- * @since 0.1.0
- */
-export function slugify(input: string): string {
-	return input
-		.toLowerCase()
-		.replace(/áàâã/g, 'a')
-		.replace(/éèê/g, 'e')
-		.replace(/íì/g, 'i')
-		.replace(/óòôõ/g, 'o')
-		.replace(/úù/g, 'u')
-		.replace(/ç/g, 'c')
-		.replace(/ /g, '-');
-}

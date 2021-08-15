@@ -1,5 +1,5 @@
 import TmUser, { ReceivedFromApi as UserReceivedFromApi } from './tm.user';
-import { format, apiRequest, slugify } from '../../utils';
+import { format, apiRequest } from '../../utils';
 
 /**
  * Classe de interação com uma scan da Tsuki Mangás.
@@ -120,19 +120,17 @@ export default class TmScan {
 	}
 
 	/**
-	 * Obter uma scan da Tsuki Mangás por nome.
-	 * @param name Nome da scan.
+	 * Obter uma scan da Tsuki Mangás por slug.
+	 * @param name Slug do nome da scan.
 	 * @returns Retorna esta classe preenchida com as informações da scan.
 	 * @since 0.1.0
 	 */
-	async getByName(name: string): Promise<TmScan> {
-		const slug = slugify(name);
-
+	async getBySlug(slug: string): Promise<TmScan> {
 		return new TmScan(
 			(await apiRequest(
 				'tm',
 				`scans/${slug}`,
-				`obter a scan ${name} (${slug})`
+				`obter a scan ${slug}`
 			)) as ReceivedFromApi
 		);
 	}

@@ -79,7 +79,7 @@ function getHostname(website: AvailableWebsitesShort): string {
 		case 'al':
 			return '';
 		case 'mal':
-			return 'api.jikan.moe/v3';
+			return 'api.jikan.moe';
 	}
 }
 

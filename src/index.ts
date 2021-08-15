@@ -2,6 +2,7 @@ import TmPage from './structures/tm/tm.page';
 import MalPage from './structures/mal/mal.page';
 
 import TmUser from './structures/tm/tm.user';
+
 import TmScan from './structures/tm/tm.scan';
 
 export class Pages {

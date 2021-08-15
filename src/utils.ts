@@ -1,8 +1,8 @@
 import { AvailableWebsites, AvailableWebsitesShort } from './types';
-import { IncomingMessage } from 'http';
-import { request } from 'https';
 import { readFile } from 'fs/promises';
+import { IncomingMessage } from 'http';
 import { dirname, join } from 'path';
+import { request } from 'https';
 
 const headers = {},
 	maxRequestsPerSecond = 10;

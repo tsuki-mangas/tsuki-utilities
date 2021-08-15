@@ -1,5 +1,5 @@
-import { format, apiRequest, slugify } from '../../utils';
 import TmUser, { ReceivedFromApi as UserReceivedFromApi } from './tm.user';
+import { format, apiRequest, slugify } from '../../utils';
 
 /**
  * Classe de interação com uma scan da Tsuki Mangás.

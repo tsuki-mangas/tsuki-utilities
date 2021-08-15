@@ -11,7 +11,7 @@ describe('classe TmScan', () => {
 		],
 		workingScansSlug = [
 			'potrinho-alegre-scans',
-			'si-lense',
+			'si-lensce',
 			'cohen-yaoi-shonen-ai',
 			'don-s-scan',
 			'triade-scanlator'

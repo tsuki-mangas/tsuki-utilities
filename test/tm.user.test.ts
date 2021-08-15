@@ -1,13 +1,29 @@
 import { Users } from '../src';
 
 describe('classe TmUser', () => {
-	const TmUser = new Users().tm;
+	const TmUser = new Users().tm,
+		workingUsernames = ['rdx', 'Kinshiki', 'KeenKz', 'KARLOSP', 'SrLixo'],
+		inexistantUsernames = [
+			'azerty123',
+			'poiuytreza321',
+			'qualquer_coisaa',
+			'sem_imaginacao',
+			'naoSei741'
+		];
 
-	it('método getByUsername - Username: luf', async () => {
-		await expect(TmUser.getByUsername('luf')).resolves.toHaveProperty('id');
+	it(`método getByUsername - Usernames: ${workingUsernames.join(
+		', '
+	)}`, async () => {
+		for (const username of workingUsernames.values())
+			await expect(TmUser.getByUsername(username)).resolves.toHaveProperty(
+				'id'
+			);
 	});
 
-	it('método getByUsername - Username: aqsx26d29r5f9r', async () => {
-		await expect(TmUser.getByUsername('aqsx26d29r5f9r')).rejects.toThrow(Error);
+	it(`método getByUsername - Usernames: ${inexistantUsernames.join(
+		', '
+	)}`, async () => {
+		for (const username of inexistantUsernames.values())
+			await expect(TmUser.getByUsername(username)).rejects.toThrow(Error);
 	});
 });

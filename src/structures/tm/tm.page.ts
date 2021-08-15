@@ -1,6 +1,10 @@
-import { TmDemographics, TmFormats, TmGenres } from '../../types';
 import { apiRequest, format, formatArray } from '../../utils';
-import { TmStatuses } from '../../types';
+import {
+	TmDemographics,
+	TmFormats,
+	TmGenres,
+	TmStatuses
+} from '../../types/tm.types';
 
 /**
  * Classe de interação com uma obra da Tsuki Mangás.

@@ -10,7 +10,7 @@ import {
 	MalStatuses,
 	MalStatusesTypeEn,
 	MalStatusesTypePt
-} from '../../types';
+} from '../../types/mal.types';
 
 /**
  * Classe de interação com uma obra do MyAnimeList.

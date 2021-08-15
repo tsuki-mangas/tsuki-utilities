@@ -1,8 +1,11 @@
-import { AvailableWebsites, AvailableWebsitesShort } from './types';
 import { readFile } from 'fs/promises';
 import { IncomingMessage } from 'http';
 import { dirname, join } from 'path';
 import { request } from 'https';
+import {
+	AvailableWebsites,
+	AvailableWebsitesShort
+} from './types/package.types';
 
 const headers = {},
 	maxRequestsPerSecond = 10;

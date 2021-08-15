@@ -84,7 +84,7 @@ export default class TmPage {
 		 */
 		principal: string;
 		/**
-		 * Títulos alternativos da obra (todos os idiomas incluídos).
+		 * Títulos alternativos da obra excluindo o principal (todos os idiomas incluídos).
 		 * @since 0.1.0
 		 */
 		alternatives: string[];

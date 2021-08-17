@@ -11,13 +11,17 @@ describe('classe MalPage', () => {
 		],
 		deletedPagesId = [19352, 21569, 24351, 39120, 56738];
 
-	it(`método get - Ids: ${workingPagesId.join(', ')}`, async () => {
+	test(`método get - Ids: ${workingPagesId.join(', ')}`, done => {
 		for (const id of workingPagesId.values())
-			await expect(MalPage.get(id)).resolves.toHaveProperty('id');
+			expect(MalPage.get(id)).resolves.toHaveProperty('id');
+
+		done();
 	});
 
-	it(`método get - Ids: ${deletedPagesId.join(', ')}`, async () => {
+	test(`método get - Ids: ${deletedPagesId.join(', ')}`, done => {
 		for (const id of deletedPagesId.values())
-			await expect(MalPage.get(id)).rejects.toThrow(Error);
+			expect(MalPage.get(id)).rejects.toThrow(Error);
+
+		done();
 	});
 });

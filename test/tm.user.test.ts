@@ -13,17 +13,19 @@ describe('classe TmUser', () => {
 
 	it(`método getByUsername - Usernames: ${workingUsernames.join(
 		', '
-	)}`, async () => {
+	)}`, done => {
 		for (const username of workingUsernames.values())
-			await expect(TmUser.getByUsername(username)).resolves.toHaveProperty(
-				'id'
-			);
+			expect(TmUser.getByUsername(username)).resolves.toHaveProperty('id');
+
+		done();
 	});
 
 	it(`método getByUsername - Usernames: ${inexistantUsernames.join(
 		', '
-	)}`, async () => {
+	)}`, done => {
 		for (const username of inexistantUsernames.values())
-			await expect(TmUser.getByUsername(username)).rejects.toThrow(Error);
+			expect(TmUser.getByUsername(username)).rejects.toThrow(Error);
+
+		done();
 	});
 });

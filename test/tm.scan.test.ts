@@ -18,18 +18,24 @@ describe('classe TmScan', () => {
 		],
 		deletedScansId = [110, 449, 764, 1018, 1290];
 
-	it(`método getById - Ids: ${workingScansId.join(', ')}`, async () => {
+	it(`método getById - Ids: ${workingScansId.join(', ')}`, done => {
 		for (const id of workingScansId.values())
-			await expect(TmScan.getById(id)).resolves.toHaveProperty('id');
+			expect(TmScan.getById(id)).resolves.toHaveProperty('id');
+
+		done();
 	});
 
-	it(`método getBySlug - Slugs: ${workingScansSlug.join(', ')}`, async () => {
+	it(`método getBySlug - Slugs: ${workingScansSlug.join(', ')}`, done => {
 		for (const slug of workingScansSlug.values())
-			await expect(TmScan.getBySlug(slug)).resolves.toHaveProperty('id');
+			expect(TmScan.getBySlug(slug)).resolves.toHaveProperty('id');
+
+		done();
 	});
 
-	it(`método getById - Ids: ${deletedScansId.join(', ')}`, async () => {
+	it(`método getById - Ids: ${deletedScansId.join(', ')}`, done => {
 		for (const id of deletedScansId.values())
-			await expect(TmScan.getById(id)).rejects.toThrow(Error);
+			expect(TmScan.getById(id)).rejects.toThrow(Error);
+
+		done();
 	});
 });

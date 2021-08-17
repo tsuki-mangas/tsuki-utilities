@@ -78,7 +78,7 @@ function getHostname(website: AvailableWebsitesShort): string {
 		case 'tm':
 			return 'tsukimangas.com';
 		case 'md':
-			return '';
+			return 'api.mangadex.org';
 		case 'al':
 			return '';
 		case 'mal':
@@ -98,7 +98,7 @@ function buildPath(website: AvailableWebsitesShort, endpoint: string): string {
 		case 'tm':
 			return `/api/v2/${endpoint}`;
 		case 'md':
-			return '';
+			return `/${endpoint}`;
 		case 'al':
 			return '';
 		case 'mal':

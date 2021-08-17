@@ -165,7 +165,8 @@ async function checkEnvFile(): Promise<void> {
  * @param endpoint Endpoint da API.
  * @param action Porque esta chamada foi feita?
  * @param debug Ativar as informações de debug (número do erro, por exemplo) nas repostas?
- * @param response Resposta da API.
+ * @param response Objeto de resposta do package https.
+ * @param responsePayload Resposta da API.
  * @returns Retorna uma mensagem de erro.
  * É suposto esta mensagem ser diretamente usada nas aplicações usando este package.
  * Exemplo:
@@ -178,13 +179,19 @@ function handleError(
 	endpoint: string,
 	action: string,
 	debug: boolean,
-	response: IncomingMessage
+	response: IncomingMessage,
+	responsePayload: string
 ): string {
 	const websiteName = short2long(website),
 		websiteGenre = website === 'mal' ? 'o' : 'a';
 
 	let message = `Ocorreu um erro ${response.statusCode} ao tentar ${action} n${websiteGenre} ${websiteName}.`;
-	if (debug) message = message + `\nEndpoint: ${endpoint}`;
+	if (debug)
+		message =
+			message +
+			`\nEndpoint: ${endpoint}\nResponse: ${
+				responsePayload.length ? JSON.stringify(responsePayload) : null
+			}`;
 
 	if (response.statusCode === 429)
 		return `Eu estou tomando ratelimit d${websiteGenre} ${websiteName}.`;
@@ -265,7 +272,16 @@ export async function apiRequest(
 						resolve(parsedResponseObject);
 					} else
 						reject(
-							new Error(handleError(website, endpoint, action, debug, response))
+							new Error(
+								handleError(
+									website,
+									endpoint,
+									action,
+									debug,
+									response,
+									responsePayload
+								)
+							)
 						);
 				});
 			}

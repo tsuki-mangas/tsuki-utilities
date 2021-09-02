@@ -199,7 +199,7 @@ export default class TmUser {
 			(await apiRequest(
 				'tm',
 				`users/${username}`,
-				`obter o usuário ${username}`
+				`obter o usuário **${username}**`
 			)) as ReceivedFromApi
 		);
 	}

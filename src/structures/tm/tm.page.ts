@@ -311,7 +311,7 @@ export default class TmPage {
 			(await apiRequest(
 				'tm',
 				`mangas/${id}`,
-				`obter a obra com Id ${id}`
+				`obter a obra com Id **${id}**`
 			)) as ReceivedFromApi
 		);
 	}

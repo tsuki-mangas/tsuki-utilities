@@ -301,7 +301,7 @@ export default class MdPage {
 			(await apiRequest(
 				'md',
 				`manga/${uuid}?includes[]=author&includes[]=artist&includes[]=cover_art`,
-				`obter a obra com Uuid ${uuid}`
+				`obter a obra com Uuid **${uuid}**`
 			)) as ReceivedFromApi
 		);
 	}

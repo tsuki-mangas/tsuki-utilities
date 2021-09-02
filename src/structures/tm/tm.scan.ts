@@ -114,7 +114,7 @@ export default class TmScan {
 			(await apiRequest(
 				'tm',
 				`scans/${id}`,
-				`obter a scan com Id ${id}`
+				`obter a scan com Id **${id}**`
 			)) as ReceivedFromApi
 		);
 	}

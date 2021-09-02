@@ -265,7 +265,7 @@ export default class MalPage {
 			(await apiRequest(
 				'mal',
 				`manga/${id}`,
-				`obter a obra com Id ${id}`
+				`obter a obra com Id **${id}**`
 			)) as ReceivedFromApi
 		);
 	}

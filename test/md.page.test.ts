@@ -1,7 +1,7 @@
-import { Pages } from '../src';
+import { MdPage } from '../src';
 
 describe('classe MdPage', () => {
-	const MdPage = new Pages().md,
+	const mdPage = new MdPage(),
 		workingPagesUuids = [
 			'e7eabe96-aa17-476f-b431-2497d5e9d060', // Black Clover
 			'bd6d0982-0091-4945-ad70-c028ed3c0917', // Mushoku Tensei ~Isekai Ittara Honki Dasu~
@@ -19,14 +19,14 @@ describe('classe MdPage', () => {
 
 	it(`método get - Uuids: ${workingPagesUuids.join(', ')}`, done => {
 		for (const uuid of workingPagesUuids.values())
-			expect(MdPage.get(uuid)).resolves.toHaveProperty('ids');
+			expect(mdPage.get(uuid)).resolves.toHaveProperty('ids');
 
 		done();
 	});
 
 	it(`método get - Uuids: ${randomPagesUuids.join(', ')}`, done => {
 		for (const uuid of randomPagesUuids.values())
-			expect(MdPage.get(uuid)).rejects.toThrow(Error);
+			expect(mdPage.get(uuid)).rejects.toThrow(Error);
 
 		done();
 	});

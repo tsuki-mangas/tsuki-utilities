@@ -1,7 +1,7 @@
-import { Scans } from '../src';
+import { TmScan } from '../src';
 
 describe('classe TmScan', () => {
-	const TmScan = new Scans().tm,
+	const tmScan = new TmScan(),
 		workingScansId = [
 			85, // Tyrant Scans
 			325, // Simple Scan
@@ -20,21 +20,21 @@ describe('classe TmScan', () => {
 
 	it(`método getById - Ids: ${workingScansId.join(', ')}`, done => {
 		for (const id of workingScansId.values())
-			expect(TmScan.getById(id)).resolves.toHaveProperty('id');
+			expect(tmScan.getById(id)).resolves.toHaveProperty('id');
 
 		done();
 	});
 
 	it(`método getBySlug - Slugs: ${workingScansSlug.join(', ')}`, done => {
 		for (const slug of workingScansSlug.values())
-			expect(TmScan.getBySlug(slug)).resolves.toHaveProperty('id');
+			expect(tmScan.getBySlug(slug)).resolves.toHaveProperty('id');
 
 		done();
 	});
 
 	it(`método getById - Ids: ${deletedScansId.join(', ')}`, done => {
 		for (const id of deletedScansId.values())
-			expect(TmScan.getById(id)).rejects.toThrow(Error);
+			expect(tmScan.getById(id)).rejects.toThrow(Error);
 
 		done();
 	});

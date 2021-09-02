@@ -1,7 +1,7 @@
-import { Pages } from '../src';
+import { MalPage } from '../src';
 
 describe('classe MalPage', () => {
-	const MalPage = new Pages().mal,
+	const malPage = new MalPage(),
 		workingPagesId = [
 			86337, // Black Clover
 			70259, // Mushoku Tensei: Isekai Ittara Honki Desu
@@ -11,16 +11,19 @@ describe('classe MalPage', () => {
 		],
 		deletedPagesId = [19352, 21569, 24351, 39120, 56738];
 
-	test(`método get - Ids: ${workingPagesId.join(', ')}`, done => {
+	test(`método get - Ids: ${workingPagesId.join(', ')}`, async done => {
 		for (const id of workingPagesId.values())
-			expect(MalPage.get(id)).resolves.toHaveProperty('id');
+			setTimeout(
+				() => expect(malPage.get(id)).resolves.toHaveProperty('id'),
+				500
+			);
 
 		done();
 	});
 
-	test(`método get - Ids: ${deletedPagesId.join(', ')}`, done => {
+	test(`método get - Ids: ${deletedPagesId.join(', ')}`, async done => {
 		for (const id of deletedPagesId.values())
-			expect(MalPage.get(id)).rejects.toThrow(Error);
+			setTimeout(() => expect(malPage.get(id)).rejects.toThrow(Error), 500);
 
 		done();
 	});

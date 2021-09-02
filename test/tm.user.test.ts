@@ -1,7 +1,7 @@
-import { Users } from '../src';
+import { TmUser } from '../src';
 
 describe('classe TmUser', () => {
-	const TmUser = new Users().tm,
+	const tmUser = new TmUser(),
 		workingUsernames = ['rdx', 'Kinshiki', 'KeenKz', 'KARLOSP', 'SrLixo'],
 		inexistantUsernames = [
 			'azerty123',
@@ -15,7 +15,7 @@ describe('classe TmUser', () => {
 		', '
 	)}`, done => {
 		for (const username of workingUsernames.values())
-			expect(TmUser.getByUsername(username)).resolves.toHaveProperty('id');
+			expect(tmUser.getByUsername(username)).resolves.toHaveProperty('id');
 
 		done();
 	});
@@ -24,7 +24,7 @@ describe('classe TmUser', () => {
 		', '
 	)}`, done => {
 		for (const username of inexistantUsernames.values())
-			expect(TmUser.getByUsername(username)).rejects.toThrow(Error);
+			expect(tmUser.getByUsername(username)).rejects.toThrow(Error);
 
 		done();
 	});

@@ -6,6 +6,7 @@ import {
 	AvailableWebsites,
 	AvailableWebsitesShort
 } from './types/package.types';
+import ApiRequestError from './structures/api.request.error';
 
 const headers = {},
 	maxRequestsPerSecond = 10;
@@ -164,7 +165,6 @@ async function checkEnvFile(): Promise<void> {
  * @param website Iniciais do site.
  * @param endpoint Endpoint da API.
  * @param action Porque esta chamada foi feita?
- * @param debug Ativar as informações de debug (número do erro, por exemplo) nas repostas?
  * @param response Objeto de resposta do package https.
  * @param responsePayload Resposta da API.
  * @returns Retorna uma mensagem de erro.
@@ -178,24 +178,17 @@ function handleError(
 	website: AvailableWebsitesShort,
 	endpoint: string,
 	action: string,
-	debug: boolean,
 	response: IncomingMessage,
 	responsePayload: string
-): string {
+): ApiRequestError {
 	const websiteName = short2long(website),
 		websiteGenre = website === 'mal' ? 'o' : 'a';
 
 	let message = `Ocorreu um erro ${response.statusCode} ao tentar ${action} n${websiteGenre} ${websiteName}.`;
-	if (debug)
-		message =
-			message +
-			`\nEndpoint: ${endpoint}\nResponse: ${
-				responsePayload.length ? JSON.stringify(responsePayload) : null
-			}`;
-
 	if (response.statusCode === 429)
-		return `Eu estou tomando ratelimit d${websiteGenre} ${websiteName}.`;
-	else return message;
+		message = `Eu estou tomando ratelimit d${websiteGenre} ${websiteName}.`;
+
+	return new ApiRequestError(message, endpoint, responsePayload);
 }
 
 /**
@@ -207,7 +200,6 @@ function handleError(
  * @param method Método HTTP.
  * @param requestPayload Json-body.
  * @param additionalHeaders Objeto de headers adicionais.
- * @param debug Ativar as informações de debug (número do erro, por exemplo) nas repostas?
  * @returns Retorna a resposta da API.
  * @since 0.1.0
  */
@@ -217,8 +209,7 @@ export async function apiRequest(
 	action: string,
 	method = 'GET',
 	requestPayload = {},
-	additionalHeaders = {},
-	debug = true
+	additionalHeaders = {}
 ): Promise<unknown> {
 	if (website === 'tm') {
 		await checkEnvFile();
@@ -272,16 +263,7 @@ export async function apiRequest(
 						resolve(parsedResponseObject);
 					} else
 						reject(
-							new Error(
-								handleError(
-									website,
-									endpoint,
-									action,
-									debug,
-									response,
-									responsePayload
-								)
-							)
+							handleError(website, endpoint, action, response, responsePayload)
 						);
 				});
 			}

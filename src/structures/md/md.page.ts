@@ -12,8 +12,8 @@ import {
 	MdLanguagesTwoLettersType,
 	MdRelationshipTypes,
 	MdLanguages
-} from '../../../types/md.types';
-import { TmDemographics, TmFormats } from '../../../types/tm.types';
+} from '../../types/md.types';
+import { TmDemographics, TmFormats } from '../../types/tm.types';
 
 /**
  * Classe de interação com uma obra da MangaDex.

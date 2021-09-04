@@ -8,7 +8,7 @@ export { default as TmUser } from './structures/tm/tm.user';
 
 export { default as ApiRequestError } from './structures/api.request.error';
 
-export * from '../types/package.types';
-export * from '../types/tm.types';
-export * from '../types/md.types';
-export * from '../types/mal.types';
+export * from './types/package.types';
+export * from './types/tm.types';
+export * from './types/md.types';
+export * from './types/mal.types';

@@ -6,7 +6,7 @@ import { request } from 'https';
 import {
 	AvailableWebsites,
 	AvailableWebsitesShort
-} from '../types/package.types';
+} from './types/package.types';
 
 const headers = {},
 	maxRequestsPerSecond = 10;

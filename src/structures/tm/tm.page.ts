@@ -4,7 +4,7 @@ import {
 	TmFormats,
 	TmGenres,
 	TmStatuses
-} from '../../../types/tm.types';
+} from '../../types/tm.types';
 
 /**
  * Classe de interação com uma obra da Tsuki Mangás.

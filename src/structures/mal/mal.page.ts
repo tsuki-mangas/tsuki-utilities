@@ -184,12 +184,12 @@ export default class MalPage {
 			english: data.title_english || null,
 			native: data.title_japanese || null,
 			alternatives: data.title_synonyms.length
-				? data.title_synonyms.map(title => title)
+				? data.title_synonyms.map((title) => title)
 				: []
 		};
 
-		this.staff = data.authors.map(staffMember => staffMember.name);
-		this.staff = this.staff.map(staffMember =>
+		this.staff = data.authors.map((staffMember) => staffMember.name);
+		this.staff = this.staff.map((staffMember) =>
 			staffMember.includes(',')
 				? `${staffMember.split(', ')[1]} ${staffMember.split(', ')[0]}`
 				: staffMember

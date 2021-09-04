@@ -11,7 +11,7 @@ describe('classe MalPage', () => {
 		],
 		deletedPagesId = [19352, 21569, 24351, 39120, 56738];
 
-	test(`método get - Ids: ${workingPagesId.join(', ')}`, async done => {
+	test(`método get - Ids: ${workingPagesId.join(', ')}`, async (done) => {
 		for (const id of workingPagesId.values())
 			setTimeout(
 				() => expect(malPage.get(id)).resolves.toHaveProperty('id'),
@@ -21,7 +21,7 @@ describe('classe MalPage', () => {
 		done();
 	});
 
-	test(`método get - Ids: ${deletedPagesId.join(', ')}`, async done => {
+	test(`método get - Ids: ${deletedPagesId.join(', ')}`, async (done) => {
 		for (const id of deletedPagesId.values())
 			setTimeout(() => expect(malPage.get(id)).rejects.toThrow(Error), 500);
 

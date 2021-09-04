@@ -17,14 +17,14 @@ describe('classe MdPage', () => {
 			'0f305ecb-ef2e-4a8e-9dc1-474eeca763fe'
 		];
 
-	it(`método get - Uuids: ${workingPagesUuids.join(', ')}`, done => {
+	it(`método get - Uuids: ${workingPagesUuids.join(', ')}`, (done) => {
 		for (const uuid of workingPagesUuids.values())
 			expect(mdPage.get(uuid)).resolves.toHaveProperty('ids');
 
 		done();
 	});
 
-	it(`método get - Uuids: ${randomPagesUuids.join(', ')}`, done => {
+	it(`método get - Uuids: ${randomPagesUuids.join(', ')}`, (done) => {
 		for (const uuid of randomPagesUuids.values())
 			expect(mdPage.get(uuid)).rejects.toThrow(Error);
 

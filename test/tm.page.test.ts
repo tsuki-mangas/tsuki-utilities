@@ -11,14 +11,14 @@ describe('classe TmPage', () => {
 		],
 		deletedPagesId = [4, 451, 1113, 1784, 2576];
 
-	it(`método get - Ids: ${workingPagesId.join(', ')}`, done => {
+	it(`método get - Ids: ${workingPagesId.join(', ')}`, (done) => {
 		for (const id of workingPagesId.values())
 			expect(tmPage.get(id)).resolves.toHaveProperty('ids');
 
 		done();
 	});
 
-	it(`método get - Ids: ${deletedPagesId.join(', ')}`, done => {
+	it(`método get - Ids: ${deletedPagesId.join(', ')}`, (done) => {
 		for (const id of deletedPagesId.values())
 			expect(tmPage.get(id)).rejects.toThrow(Error);
 

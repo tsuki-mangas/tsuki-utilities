@@ -28,7 +28,6 @@ export const MalFormats = {
 	Manga: 'Mangá',
 	Manhwa: 'Manhwa',
 	Manhua: 'Manhua',
-	Novel: 'Novel',
 	// ----- \\
 	'One-shot': 'Mangá',
 	Doujin: 'Mangá'
@@ -235,5 +234,7 @@ export const MalGenres = {
 		translated: 'Thriller'
 	}
 } as const;
-export type MalGenresTypeEn = typeof MalGenres[keyof typeof MalGenres]['original'];
-export type MalGenresTypePt = typeof MalGenres[keyof typeof MalGenres]['translated'];
+export type MalGenresTypeEn =
+	typeof MalGenres[keyof typeof MalGenres]['original'];
+export type MalGenresTypePt =
+	typeof MalGenres[keyof typeof MalGenres]['translated'];

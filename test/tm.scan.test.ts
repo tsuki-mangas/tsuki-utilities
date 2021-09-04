@@ -18,21 +18,21 @@ describe('classe TmScan', () => {
 		],
 		deletedScansId = [110, 449, 764, 1018, 1290];
 
-	it(`método getById - Ids: ${workingScansId.join(', ')}`, done => {
+	it(`método getById - Ids: ${workingScansId.join(', ')}`, (done) => {
 		for (const id of workingScansId.values())
 			expect(tmScan.getById(id)).resolves.toHaveProperty('id');
 
 		done();
 	});
 
-	it(`método getBySlug - Slugs: ${workingScansSlug.join(', ')}`, done => {
+	it(`método getBySlug - Slugs: ${workingScansSlug.join(', ')}`, (done) => {
 		for (const slug of workingScansSlug.values())
 			expect(tmScan.getBySlug(slug)).resolves.toHaveProperty('id');
 
 		done();
 	});
 
-	it(`método getById - Ids: ${deletedScansId.join(', ')}`, done => {
+	it(`método getById - Ids: ${deletedScansId.join(', ')}`, (done) => {
 		for (const id of deletedScansId.values())
 			expect(tmScan.getById(id)).rejects.toThrow(Error);
 

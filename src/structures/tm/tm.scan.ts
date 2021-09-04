@@ -141,7 +141,7 @@ export default class TmScan {
  * @private
  * @since 0.1.0
  */
-type ReceivedFromApi = {
+export type ReceivedFromApi = {
 	id: number;
 	url: string;
 	name: string;

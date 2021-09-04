@@ -13,7 +13,7 @@ describe('classe TmUser', () => {
 
 	it(`método getByUsername - Usernames: ${workingUsernames.join(
 		', '
-	)}`, done => {
+	)}`, (done) => {
 		for (const username of workingUsernames.values())
 			expect(tmUser.getByUsername(username)).resolves.toHaveProperty('id');
 
@@ -22,7 +22,7 @@ describe('classe TmUser', () => {
 
 	it(`método getByUsername - Usernames: ${inexistantUsernames.join(
 		', '
-	)}`, done => {
+	)}`, (done) => {
 		for (const username of inexistantUsernames.values())
 			expect(tmUser.getByUsername(username)).rejects.toThrow(Error);
 

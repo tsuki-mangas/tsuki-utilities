@@ -1,3 +1,4 @@
+import ApiRequestError from './structures/api.request.error';
 import { readFile } from 'fs/promises';
 import { IncomingMessage } from 'http';
 import { dirname, join } from 'path';
@@ -5,8 +6,7 @@ import { request } from 'https';
 import {
 	AvailableWebsites,
 	AvailableWebsitesShort
-} from './types/package.types';
-import ApiRequestError from './structures/api.request.error';
+} from '../types/package.types';
 
 const headers = {},
 	maxRequestsPerSecond = 10;
@@ -58,10 +58,12 @@ export function formatArray(
 
 	for (const str of new Set(input).values()) tempArray.push(str);
 	input = [];
-	for (const str of new Map(tempArray.map(s => [s.toLowerCase(), s])).values())
+	for (const str of new Map(
+		tempArray.map((s) => [s.toLowerCase(), s])
+	).values())
 		input.push(str);
 
-	if (formatElements) input.map(element => format(element));
+	if (formatElements) input.map((element) => format(element));
 	if (sort) tempArray.sort(Intl.Collator().compare);
 
 	return tempArray;
@@ -219,7 +221,7 @@ export async function apiRequest(
 
 	activeRequests++;
 	if (activeRequests >= maxRequestsPerSecond)
-		await new Promise(resolve =>
+		await new Promise((resolve) =>
 			setTimeout(
 				resolve,
 				1000 * Math.floor(activeRequests / maxRequestsPerSecond)
@@ -248,10 +250,10 @@ export async function apiRequest(
 						? headers
 						: { ...headers, 'content-type': 'application/json' }
 			},
-			response => {
+			(response) => {
 				let responsePayload = '';
 
-				response.on('data', data => {
+				response.on('data', (data) => {
 					responsePayload += data;
 				});
 

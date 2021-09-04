@@ -4,7 +4,7 @@ import {
 	TmFormats,
 	TmGenres,
 	TmStatuses
-} from '../../types/tm.types';
+} from '../../../types/tm.types';
 
 /**
  * Classe de interação com uma obra da Tsuki Mangás.
@@ -212,7 +212,7 @@ export default class TmPage {
 	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: ReceivedFromApi, beautify = true) {
+	constructor(data?: PageReceivedFromApi, beautify = true) {
 		if (!data) return this;
 
 		this.ids = {
@@ -238,7 +238,7 @@ export default class TmPage {
 		this.titles = {
 			principal: data.title,
 			alternatives: data.titles?.length
-				? data.titles?.map(title => title.title)
+				? data.titles?.map((title) => title.title)
 				: []
 		};
 
@@ -312,17 +312,16 @@ export default class TmPage {
 				'tm',
 				`mangas/${id}`,
 				`obter a obra com Id **${id}**`
-			)) as ReceivedFromApi
+			)) as PageReceivedFromApi
 		);
 	}
 }
 
 /**
  * Objeto recebido ao chamar a API.
- * @private
  * @since 0.1.0
  */
-type ReceivedFromApi = {
+type PageReceivedFromApi = {
 	id: number;
 	url: string;
 	title: string;

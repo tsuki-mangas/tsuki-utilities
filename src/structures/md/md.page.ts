@@ -12,8 +12,8 @@ import {
 	MdLanguagesTwoLettersType,
 	MdRelationshipTypes,
 	MdLanguages
-} from '../../types/md.types';
-import { TmDemographics, TmFormats } from '../../types/tm.types';
+} from '../../../types/md.types';
+import { TmDemographics, TmFormats } from '../../../types/tm.types';
 
 /**
  * Classe de interação com uma obra da MangaDex.
@@ -160,10 +160,10 @@ export default class MdPage {
 	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(received?: ReceivedFromApi, beautify = true) {
+	constructor(received?: PageReceivedFromApi, beautify = true) {
 		if (!received) return this;
 
-		const { data, relationships } = received;
+		const { data } = received;
 
 		this.ids = {
 			md: received.data.id,
@@ -177,13 +177,17 @@ export default class MdPage {
 
 		this.links = {
 			overview: `https://mangadex.org/title/${data.id}`,
-			cover: relationships.find(
-				relationship => relationship.type === 'cover_art'
+			cover: data.relationships.find(
+				(relationship) => relationship.type === 'cover_art'
 			)
 				? `https://uploads.mangadex.org/covers/${this.ids.md}/${
-						(relationships.find(
-							relationship => relationship.type === 'cover_art'
-						)?.attributes as { fileName: string })?.fileName
+						(
+							data.relationships.find(
+								(relationship) => relationship.type === 'cover_art'
+							)?.attributes as {
+								fileName: string;
+							}
+						)?.fileName
 				  }`
 				: null
 		};
@@ -210,18 +214,18 @@ export default class MdPage {
 		this.authors = [];
 		this.artists = [];
 
-		for (const author of relationships
-			.filter(relationship => relationship.type === 'author')
+		for (const author of data.relationships
+			.filter((relationship) => relationship.type === 'author')
 			.values()) {
-			const authorName = (author.attributes as { name: string }).name;
-			if (authorName.length) this.authors.push(authorName);
+			const authorName = (author.attributes as { name: string })?.name;
+			if (authorName?.length) this.authors.push(authorName);
 		}
 
-		for (const artist of relationships
-			.filter(relationship => relationship.type === 'artist')
+		for (const artist of data.relationships
+			.filter((relationship) => relationship.type === 'artist')
 			.values()) {
-			const artistName = (artist.attributes as { name: string }).name;
-			if (artistName.length) this.artists.push(artistName);
+			const artistName = (artist.attributes as { name: string })?.name;
+			if (artistName?.length) this.artists.push(artistName);
 		}
 
 		switch (data.attributes.originalLanguage) {
@@ -241,7 +245,7 @@ export default class MdPage {
 		) as this['demographic'];
 
 		this.language = MdLanguages.find(
-			languageObject =>
+			(languageObject) =>
 				languageObject.twoLetters === data.attributes.originalLanguage
 		);
 		this.status = MdStatuses[data.attributes.status] || null;
@@ -302,17 +306,35 @@ export default class MdPage {
 				'md',
 				`manga/${uuid}?includes[]=author&includes[]=artist&includes[]=cover_art`,
 				`obter a obra com Uuid **${uuid}**`
-			)) as ReceivedFromApi
+			)) as PageReceivedFromApi
 		);
+	}
+
+	/**
+	 * Procurar alguma obra na Tsuki Mangás.
+	 * @param query Input. Texto a procurar.
+	 * @returns Array de classes.
+	 */
+	async search(query: string): Promise<MdPage[]> {
+		const request = (await apiRequest(
+				'md',
+				`manga?title=${query}&includes[]=author&includes[]=artist&includes[]=cover_art`,
+				`procurar **${query}**`
+			)) as SearchReceivedFromApi,
+			results: MdPage[] = [];
+
+		for (const result of request.results.values())
+			results.push(new MdPage(result));
+
+		return results;
 	}
 }
 
 /**
  * Objeto recebido ao chamar a API.
- * @private
  * @since 0.1.0
  */
-type ReceivedFromApi = {
+type PageReceivedFromApi = {
 	data: {
 		id: string;
 		attributes: {
@@ -343,16 +365,25 @@ type ReceivedFromApi = {
 				};
 			}>;
 		};
+		relationships: Array<{
+			id: string;
+			type: MdRelationshipTypes;
+			attributes:
+				| {
+						name: string;
+				  }
+				| {
+						fileName: string;
+				  };
+		}>;
 	};
-	relationships: Array<{
-		id: string;
-		type: MdRelationshipTypes;
-		attributes:
-			| {
-					name: string;
-			  }
-			| {
-					fileName: string;
-			  };
-	}>;
+};
+
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.1.3
+ */
+type SearchReceivedFromApi = {
+	results: PageReceivedFromApi[];
 };

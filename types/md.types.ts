@@ -96,8 +96,10 @@ export const MdLanguages = [
 	{ english: 'Norwegian', twoLetters: 'no', threeLetters: 'nor' },
 	{ english: 'Other', twoLetters: 'NULL', threeLetters: 'NULL' }
 ] as const;
-export type MdLanguagesType = typeof MdLanguages[keyof typeof MdLanguages[keyof typeof MdLanguages]];
-export type MdLanguagesTwoLettersType = typeof MdLanguages[keyof typeof MdLanguages[keyof typeof MdLanguages]]['twoLetters'];
+export type MdLanguagesType =
+	typeof MdLanguages[keyof typeof MdLanguages[keyof typeof MdLanguages]];
+export type MdLanguagesTwoLettersType =
+	typeof MdLanguages[keyof typeof MdLanguages[keyof typeof MdLanguages]]['twoLetters'];
 
 /**
  * Gênero oficiais da MangaDex.
@@ -413,4 +415,5 @@ export const MdGenres = {
 	}
 } as const;
 export type MdGenresTypeEn = typeof MdGenres[keyof typeof MdGenres]['original'];
-export type MdGenresTypePt = typeof MdGenres[keyof typeof MdGenres]['translated'];
+export type MdGenresTypePt =
+	typeof MdGenres[keyof typeof MdGenres]['translated'];

@@ -315,10 +315,31 @@ export default class TmPage {
 			)) as PageReceivedFromApi
 		);
 	}
+
+	/**
+	 * Procurar alguma obra na Tsuki Mangás.
+	 * @param query Input. Texto a procurar.
+	 * @returns Retorna uma array de classes.
+	 * @since 0.1.3
+	 */
+	async search(query: string): Promise<TmPage[]> {
+		const request = (await apiRequest(
+				'tm',
+				`mangas?title=${query}`,
+				`procurar **${query}**`
+			)) as SearchReceivedFromApi,
+			results: TmPage[] = [];
+
+		for (const result of request.data.values())
+			results.push(new TmPage(result));
+
+		return results;
+	}
 }
 
 /**
  * Objeto recebido ao chamar a API.
+ * @private
  * @since 0.1.0
  */
 type PageReceivedFromApi = {
@@ -351,4 +372,13 @@ type PageReceivedFromApi = {
 	genres?: Array<{
 		genre: keyof typeof TmGenres | string;
 	}>;
+};
+
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.1.3
+ */
+type SearchReceivedFromApi = {
+	data: PageReceivedFromApi[];
 };

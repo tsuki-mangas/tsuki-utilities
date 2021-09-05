@@ -28,6 +28,7 @@ export const MalFormats = {
 	Manga: 'Mangá',
 	Manhwa: 'Manhwa',
 	Manhua: 'Manhua',
+	'Light Novel': 'Novel',
 	// ----- \\
 	'One-shot': 'Mangá',
 	Doujin: 'Mangá'

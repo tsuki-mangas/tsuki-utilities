@@ -89,8 +89,9 @@ export default class TmScan {
 		this.about = data.description || null;
 
 		this.members = [];
-		for (const member of data.members.values())
-			this.members.push(new TmUser(member.user));
+		if (data.members)
+			for (const member of data.members.values())
+				this.members.push(new TmUser(member.user));
 
 		if (beautify) {
 			if (this.links.website) format(this.links.website);

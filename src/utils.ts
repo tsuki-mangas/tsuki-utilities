@@ -243,7 +243,7 @@ export async function apiRequest(
 		const req = request(
 			{
 				hostname: getHostname(website),
-				path: buildPath(website, endpoint),
+				path: buildPath(website, encodeURI(endpoint)),
 				method,
 				headers:
 					method === 'GET'

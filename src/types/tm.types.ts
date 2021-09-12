@@ -119,3 +119,4 @@ export enum TmGenres {
 	'Yuri',
 	'Zumbis'
 }
+export type TmGenresType = keyof typeof TmGenres;

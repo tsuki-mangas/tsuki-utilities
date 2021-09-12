@@ -154,7 +154,7 @@ export default class TmChapter {
 		const request = (await apiRequest(
 				'tm',
 				`chapters?manga_id=${pageId}&order=${filter.order}&page=${filter.page}`,
-				`obter a lista parcial de capítulos da páginda com Id **${pageId}`
+				`obter a lista parcial de capítulos da páginda com Id **${pageId}**`
 			)) as PartialListReceivedFromApi,
 			results: TmChapter[] = [];
 

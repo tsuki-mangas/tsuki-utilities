@@ -412,6 +412,7 @@ export default class TmPage {
 
 /**
  * Verifica se um gênero é válido na Tsuki Mangás.
+ * @private
  * @param input Possível gênero.
  * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
  * @since 0.1.3

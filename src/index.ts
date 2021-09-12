@@ -1,5 +1,6 @@
 export { default as TmPage } from './structures/tm/tm.page';
 export { default as MdPage } from './structures/md/md.page';
+export { default as AlPage } from './structures/al/al.page';
 export { default as MalPage } from './structures/mal/mal.page';
 
 export { default as TmChapter } from './structures/tm/tm.chapter';

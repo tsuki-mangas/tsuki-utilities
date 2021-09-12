@@ -84,7 +84,7 @@ function getHostname(website: AvailableWebsitesShort): string {
 		case 'md':
 			return 'api.mangadex.org';
 		case 'al':
-			return '';
+			return 'graphql.anilist.co';
 		case 'mal':
 			return 'api.jikan.moe';
 	}

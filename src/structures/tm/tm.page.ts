@@ -3,6 +3,7 @@ import {
 	TmDemographics,
 	TmFormats,
 	TmGenres,
+	TmGenresType,
 	TmStatuses
 } from '../../types/tm.types';
 
@@ -119,9 +120,9 @@ export default class TmPage {
 	 * @since 0.1.0
 	 */
 	demographic?: {
-		id: number;
+		id: 0 | 1 | 2 | 3;
 		label: keyof typeof TmDemographics;
-	};
+	} | null;
 
 	/**
 	 * Obra adulta?
@@ -143,7 +144,7 @@ export default class TmPage {
 	 * Gêneros da obra.
 	 * @since 0.1.0
 	 */
-	genres?: Array<keyof typeof TmGenres>;
+	genres?: TmGenresType[];
 
 	/**
 	 * Objeto relativo aos votos da obra.
@@ -245,15 +246,19 @@ export default class TmPage {
 		this.authors = data.author?.length ? data.author.split(', ') : [];
 		this.artists = data.artist?.length ? data.artist.split(', ') : [];
 
-		this.format = {
-			id: data.format,
-			label: TmFormats[data.format] as keyof typeof TmFormats
-		};
+		if (data.format >= 1 || data.format <= 3)
+			this.format = {
+				id: data.format as 0 | 1 | 2 | 3,
+				label: TmFormats[data.format] as keyof typeof TmFormats
+			};
+		else this.format = null;
 
-		this.demographic = {
-			id: data.demography,
-			label: TmDemographics[data.demography] as keyof typeof TmDemographics
-		};
+		if (data.demography >= 1 || data.demography <= 3)
+			this.demographic = {
+				id: data.demography as 0 | 1 | 2 | 3,
+				label: TmDemographics[data.demography] as keyof typeof TmDemographics
+			};
+		else this.demographic = null;
 
 		this.adult = data.adult_content ? true : false;
 		this.status = data.status;
@@ -262,8 +267,7 @@ export default class TmPage {
 		this.genres = [];
 		if (data.genres)
 			for (const genre of data.genres.values())
-				if (Object.keys(TmGenres).includes(genre.genre))
-					this.genres.push(genre.genre as keyof typeof TmGenres);
+				if (inputIsGenre(genre.genre)) this.genres.push(genre.genre);
 
 		this.rating = {
 			total: data.total_rating,
@@ -293,7 +297,7 @@ export default class TmPage {
 			);
 			this.authors = formatArray(this.authors, true, false);
 			this.artists = formatArray(this.artists, true, false);
-			this.genres = formatArray(this.genres) as Array<keyof typeof TmGenres>;
+			this.genres = formatArray(this.genres) as TmGenresType[];
 			if (this.synopsis) this.synopsis = format(this.synopsis);
 		}
 

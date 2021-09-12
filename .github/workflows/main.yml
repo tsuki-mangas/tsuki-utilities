@@ -28,6 +28,7 @@ jobs:
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=2
         env:
+          TM_TOKEN: ${{ secrets.TM_TOKEN }}
           TM_BB_TOKEN: ${{ secrets.TM_BB_TOKEN }}
 
       - name: Build

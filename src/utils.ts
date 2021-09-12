@@ -150,14 +150,17 @@ async function checkEnvFile(): Promise<void> {
 	const envVariables = fileContent.split('\n');
 	for (let envVariable of envVariables.values()) {
 		/**
-		 * Seria melhor dar split, mas há o risco da key conter um '='.
+		 * Seria melhor dar split diretamente, mas há o risco da value conter um '='.
 		 * Por tanto, para não ter que tratar desse problema, simplesmente trocamos
-		 * o primeiro '=' por ';;;', já que a chance da key conter ';;;' é extremamente baixa.
+		 * o primeiro '=' por ';;;', já que a chance da value conter ';;;' é extremamente baixa.
 		 */
 		envVariable = envVariable.replace('=', ';;;');
-		const splitted = envVariable.split(';;;');
+		const splitted = envVariable.split(';;;'),
+			hasLineReturn = splitted[1].endsWith('\r');
 
-		process.env[splitted[0]] = splitted[1];
+		process.env[splitted[0]] = hasLineReturn
+			? splitted[1].replace(new RegExp('\r'), '')
+			: splitted[1];
 	}
 }
 

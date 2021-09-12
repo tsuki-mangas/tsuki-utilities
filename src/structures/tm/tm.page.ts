@@ -1,4 +1,9 @@
-import { apiRequest, format, formatArray } from '../../utils';
+import {
+	apiRequest,
+	createMultipartPayload,
+	format,
+	formatArray
+} from '../../utils';
 import {
 	TmDemographics,
 	TmFormats,
@@ -111,9 +116,9 @@ export default class TmPage {
 	 * @since 0.1.0
 	 */
 	format?: {
-		id: number;
+		id: 0 | 1 | 2 | 3;
 		label: keyof typeof TmFormats;
-	};
+	} | null;
 
 	/**
 	 * Demografia da obra.
@@ -339,6 +344,59 @@ export default class TmPage {
 
 		return results;
 	}
+
+	/**
+	 * Cria uma página na Tsuki Mangás.
+	 * @param page Informações da página.
+	 * @returns Retorna esta classe preenchida com as informações da obra.
+	 * @since 0.1.3
+	 */
+	async create(page: PageCreationType): Promise<TmPage> {
+		const payloadObject = {
+				dex_id: page.mdId ?? '',
+				mal_id: page.malId ?? '',
+				anilist_id: page.alId ?? '',
+
+				trailer: page.trailer ?? '',
+
+				title: page.principalTitle ?? '',
+				titles_array: page.alternativeTitles,
+
+				author: page.authors?.join(', ') ?? '',
+				artist: page.artists?.join(', ') ?? '',
+
+				format: page.format,
+
+				demography: page.demographic,
+
+				adult_content: page.adult ? 1 : 0,
+				status: page.status ?? 'Ativo',
+				synopsis: page.synopsis ?? '',
+				genres_array: page.genres,
+
+				poster_path: page.coverPath,
+				banner_path: page.bannerPath
+			} as Record<string, string[] | string | number>,
+			payload = await createMultipartPayload(payloadObject),
+			request = (await apiRequest(
+				'tm',
+				'mangas',
+				`criar a página **${this.titles?.principal}**`,
+				'POST',
+				payload
+			)) as PageReceivedFromApi;
+
+		return new TmPage(request);
+	}
+
+/**
+ * Verifica se um gênero é válido na Tsuki Mangás.
+ * @param input Possível gênero.
+ * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
+ * @since 0.1.3
+ */
+function inputIsGenre(input: string): input is TmGenresType {
+	return Object.keys(TmGenres).includes(input);
 }
 
 /**
@@ -374,7 +432,7 @@ type PageReceivedFromApi = {
 		title: string;
 	}>;
 	genres?: Array<{
-		genre: keyof typeof TmGenres | string;
+		genre: string;
 	}>;
 };
 
@@ -385,4 +443,28 @@ type PageReceivedFromApi = {
  */
 type SearchReceivedFromApi = {
 	data: PageReceivedFromApi[];
+};
+
+/**
+ * Informações necessárias para a criação de uma página na Tsuki Mangás.
+ * @private
+ * @since 0.1.3
+ */
+type PageCreationType = {
+	mdId?: string;
+	alId?: number;
+	malId?: number;
+	trailer?: string;
+	principalTitle: string;
+	alternativeTitles: string[];
+	authors?: string[];
+	artists?: string[];
+	format: 0 | 1 | 2 | 3;
+	demographic: 0 | 1 | 2 | 3;
+	adult: boolean;
+	status?: TmStatuses;
+	synopsis?: string;
+	genres?: TmGenresType[];
+	coverPath: string;
+	bannerPath?: string;
 };

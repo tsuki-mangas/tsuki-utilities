@@ -152,23 +152,6 @@ export default class TmPage {
 	genres?: TmGenresType[];
 
 	/**
-	 * Objeto relativo aos votos da obra.
-	 * @since 0.1.0
-	 */
-	rating?: {
-		/**
-		 * Total de votos da obra.
-		 * @since 0.1.0
-		 */
-		total: number;
-		/**
-		 * Média dos votos da obra.
-		 * @since 0.1.0
-		 */
-		average: number;
-	};
-
-	/**
 	 * Objeto relativo aos capítulos da obra.
 	 * @since 0.1.0
 	 */
@@ -183,6 +166,23 @@ export default class TmPage {
 		 * @since 0.1.0
 		 */
 		lastPubishedAt: Date | null;
+	};
+
+	/**
+	 * Objeto relativo aos votos da obra.
+	 * @since 0.1.0
+	 */
+	rating?: {
+		/**
+		 * Total de votos da obra.
+		 * @since 0.1.0
+		 */
+		total: number;
+		/**
+		 * Média dos votos da obra.
+		 * @since 0.1.0
+		 */
+		average: number;
 	};
 
 	/**
@@ -274,16 +274,16 @@ export default class TmPage {
 			for (const genre of data.genres.values())
 				if (inputIsGenre(genre.genre)) this.genres.push(genre.genre);
 
-		this.rating = {
-			total: data.total_rating,
-			average: data.rating
-		};
-
 		this.chapters = {
 			total: data.chapters_count,
 			lastPubishedAt: data.last_published_at
 				? new Date(data.last_published_at.replace(/-/g, '/'))
 				: null
+		};
+
+		this.rating = {
+			total: data.total_rating,
+			average: data.rating
 		};
 
 		this.views = {

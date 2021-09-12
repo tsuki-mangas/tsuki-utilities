@@ -10,7 +10,7 @@
  * Status de publicação da Tsuki Mangás.
  * @since 0.1.0
  */
-export type TmStatuses = 'Ativo' | 'Completo' | 'Cancelado' | 'Hiato';
+export type TmStatuses = 'Completo' | 'Ativo' | 'Hiato' | 'Cancelado';
 
 /**
  * Todos os formatos da Tsuki Mangás associados aos respetivos Ids.
@@ -22,6 +22,7 @@ export enum TmFormats {
 	'Manhua',
 	'Novel'
 }
+export type TmFormatsType = keyof typeof TmFormats;
 
 /**
  * As 4 demografias associadas aos respetivos Ids.

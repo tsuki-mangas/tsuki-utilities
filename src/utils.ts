@@ -28,10 +28,7 @@ export function capitalize(input: string): string {
 }
 
 /**
- * Limpa os espaços a mais de uma string.
- * Exemplo:
- * - ' One Piece ' vira 'One Piece'
- * - 'One Piece' vira 'One Piece'
+ * Tira os espaços a mais de uma string.
  * @private
  * @param input Alguma string.
  * @returns Retorna a string sempre espaços duplos ou mais.
@@ -307,6 +304,7 @@ export async function apiRequest(
 		headers['Authorization'] = process.env.TM_TOKEN as string;
 		headers['Session-App-Key'] = process.env.TM_BB_TOKEN as string;
 	} else if (website === 'mal') headers['If-None-Match'] = 'ETag';
+	else if (website === 'al') headers['Accept'] = 'application/json';
 
 	if (requestPayload instanceof Buffer)
 		headers['Content-Type'] = `multipart/form-data; boundary=${boundary}`;

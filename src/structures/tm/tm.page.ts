@@ -13,7 +13,7 @@ import {
 } from '../../types/tm.types';
 
 /**
- * Classe de interação com uma obra da Tsuki Mangás.
+ * Classe de interação com obras da Tsuki Mangás.
  * @since 0.1.0
  */
 export default class TmPage {

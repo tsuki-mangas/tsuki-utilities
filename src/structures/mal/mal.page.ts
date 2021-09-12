@@ -11,6 +11,7 @@ import {
 	MalStatusesTypeEn,
 	MalStatusesTypePt
 } from '../../types/mal.types';
+import MalPageSearch from './mal.page.search';
 
 /**
  * Classe de interação com uma obra do MyAnimeList.
@@ -198,10 +199,6 @@ export default class MalPage {
 		this.status = MalStatuses[data.status] || null;
 		this.synopsis = data.synopsis || null;
 
-		function isValidGenre(value: number): value is keyof typeof MalGenres {
-			return value in MalGenres;
-		}
-
 		this.genres = [];
 		for (const genre of data.genres.values())
 			if (MalDemographics[genre.mal_id])
@@ -209,7 +206,7 @@ export default class MalPage {
 					id: genre.mal_id,
 					label: MalDemographics[genre.mal_id] as keyof typeof MalDemographics
 				};
-			else if (isValidGenre(genre.mal_id))
+			else if (inputIsGenre(genre.mal_id))
 				this.genres.push(MalGenres[genre.mal_id].translated);
 
 		this.adult = this.genres.includes('Hentai');
@@ -269,6 +266,28 @@ export default class MalPage {
 			)) as ReceivedFromApi
 		);
 	}
+
+	/**
+	 * Procurar alguma obra no MyAnimeList.
+	 * @param query Input. Texto a procurar.
+	 * @param limit Limite de resultados.
+	 * @returns Retorna uma array de classes parciais.
+	 * @since 0.1.3
+	 */
+	async search(query: string, limit = 5): Promise<MalPageSearch> {
+		return new MalPageSearch(query, limit).run();
+	}
+}
+
+/**
+ * Verifica se um gênero é válido no MyAnimeList.
+ * @private
+ * @param input Possível gênero.
+ * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
+ * @since 0.1.3
+ */
+function inputIsGenre(input: number): input is keyof typeof MalGenres {
+	return input in MalGenres;
 }
 
 /**

@@ -1,15 +1,16 @@
 import ApiRequestError from './structures/api.request.error';
-import { readFile } from 'fs/promises';
+import { dirname, join, parse } from 'path';
 import { IncomingMessage } from 'http';
-import { dirname, join } from 'path';
+import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 import { request } from 'https';
 import {
 	AvailableWebsites,
 	AvailableWebsitesShort
 } from './types/package.types';
 
-const headers = {},
-	maxRequestsPerSecond = 10;
+const maxRequestsPerSecond = 10,
+	boundary = `tsuki-boundary-${Date.now().toString(16)}`;
 let activeRequests = 0;
 
 /**
@@ -197,13 +198,81 @@ function handleError(
 }
 
 /**
- * Prepara, envia, recebe, trata as chamadas a alguma API.
+ * Criar um multipart payload.
+ * @private
+ * @param object Objeto a mandar para a API.
+ * @returns Retorna um Buffer.
+ * @since 0.1.3
+ */
+export async function createMultipartPayload(
+	object: Record<string, string[] | string | number>
+): Promise<Buffer> {
+	const dataArray: Array<string | Buffer> = [];
+
+	for (const property of Object.keys(object).values()) {
+		if (object[property] === undefined) continue;
+		// ---------- \\
+		else if (property.endsWith('_path')) {
+			dataArray.push(
+				`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
+					'_path',
+					''
+				)}"; filename="${
+					parse(object[property] as string).base
+				}"\r\nContent-Type: ${
+					object[property].toString().endsWith('png')
+						? 'image/png'
+						: 'image/jpeg'
+				}\r\n\r\n`
+			);
+			dataArray.push(readFileSync(object[property].toString()));
+		}
+		// ---------- \\
+		else if (property.endsWith('_array'))
+			if (!Array.isArray(object[property])) continue;
+			else {
+				const propertyArray = object[property] as string[];
+				if (propertyArray.length === 0) continue;
+				else
+					propertyArray.forEach((value) => {
+						dataArray.push(
+							`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
+								'_array',
+								'[]'
+							)}"\r\n\r\n`
+						);
+						dataArray.push(value);
+					});
+			}
+		// ---------- \\
+		else {
+			dataArray.push(
+				`--${boundary}\r\nContent-Disposition: form-data; name="${property}"\r\n\r\n`
+			);
+			dataArray.push(object[property].toString());
+		}
+
+		dataArray.push(`\r\n`);
+	}
+
+	dataArray.push(`--${boundary}--\r\n`);
+	return Buffer.concat(
+		dataArray.map((element) =>
+			element instanceof Buffer
+				? Buffer.from(element)
+				: Buffer.from(element.toString(), 'utf8')
+		)
+	);
+}
+
+/**
+ * Prepara, envia, recebe, trata as chamadas de alguma API.
  * @private
  * @param website Iniciais do site.
  * @param endpoint Endpoint da API.
  * @param action Porque esta chamada foi feita?
  * @param method Método HTTP.
- * @param requestPayload Json-body.
+ * @param requestPayload Objeto Json ou Buffer.
  * @param additionalHeaders Objeto de headers adicionais.
  * @returns Retorna a resposta da API.
  * @since 0.1.0
@@ -212,14 +281,16 @@ export async function apiRequest(
 	website: AvailableWebsitesShort,
 	endpoint: string,
 	action: string,
-	method = 'GET',
-	requestPayload = {},
-	additionalHeaders = {}
+	method = 'GET' as 'GET' | 'POST' | 'DELETE',
+	requestPayload = {} as Record<string, unknown> | Buffer,
+	additionalHeaders = {} as Record<string, string>
 ): Promise<unknown> {
 	if (website === 'tm') {
 		await checkEnvFile();
 		if (!process.env.TM_BB_TOKEN)
 			throw new Error('Token de block-bypass da Tsuki Mangás inválido!');
+		if (method != 'GET' && !process.env.TM_TOKEN)
+			throw new Error('Token da Tsuki Mangás inválido!');
 	}
 
 	activeRequests++;
@@ -231,14 +302,15 @@ export async function apiRequest(
 			)
 		);
 
-	if (website === 'tm')
-		Object.assign(headers, {
-			'Session-App-Key': process.env.TM_BB_TOKEN
-		});
-	else if (website === 'mal')
-		Object.assign(headers, {
-			'If-None-Match': 'ETag'
-		});
+	const headers = { ...additionalHeaders };
+	if (website === 'tm') {
+		headers['Authorization'] = process.env.TM_TOKEN as string;
+		headers['Session-App-Key'] = process.env.TM_BB_TOKEN as string;
+	} else if (website === 'mal') headers['If-None-Match'] = 'ETag';
+
+	if (requestPayload instanceof Buffer)
+		headers['Content-Type'] = `multipart/form-data; boundary=${boundary}`;
+	else headers['Content-Type'] = 'application/json';
 
 	Object.assign(headers, additionalHeaders);
 
@@ -248,10 +320,7 @@ export async function apiRequest(
 				hostname: getHostname(website),
 				path: buildPath(website, encodeURI(endpoint)),
 				method,
-				headers:
-					method === 'GET'
-						? headers
-						: { ...headers, 'content-type': 'application/json' }
+				headers
 			},
 			(response) => {
 				let responsePayload = '';
@@ -274,7 +343,10 @@ export async function apiRequest(
 			}
 		);
 
-		if (method !== 'GET') req.write(JSON.stringify(requestPayload));
+		if (method !== 'GET')
+			requestPayload instanceof Buffer
+				? req.write(requestPayload)
+				: req.write(JSON.stringify(requestPayload));
 
 		req.end();
 	});

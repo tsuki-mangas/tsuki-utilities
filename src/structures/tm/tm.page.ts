@@ -389,6 +389,27 @@ export default class TmPage {
 		return new TmPage(request);
 	}
 
+	/**
+	 * Deleta uma página da Tsuki Mangás.
+	 * @param id Se 'id' for definido, então ele apaga a página com esse Id; se não, ele apaga a página desta classe.
+	 * @returns Retorna esta classe preenchida com as informações da obra.
+	 * @since 0.1.3
+	 */
+	async delete(id?: number): Promise<TmPage> {
+		if (!id && !this.ids?.tm)
+			throw new Error('Preciso de um Id antes de deletar uma página.');
+
+		await apiRequest(
+			'tm',
+			`mangas/${id ?? this.ids?.tm}`,
+			`deletar a obra **${this.titles?.principal}**`,
+			'DELETE'
+		);
+
+		return this;
+	}
+}
+
 /**
  * Verifica se um gênero é válido na Tsuki Mangás.
  * @param input Possível gênero.

@@ -14,7 +14,7 @@ import {
 import MalPageSearch from './mal.page.search';
 
 /**
- * Classe de interação com uma obra do MyAnimeList.
+ * Classe de interação com obras do MyAnimeList.
  * @since 0.1.0
  */
 export default class MalPage {
@@ -148,16 +148,10 @@ export default class MalPage {
 	 */
 	volumes?: number;
 	/**
-	 * Objeto relativo aos capítulos da obra.
+	 * Número total de capítulos da obra.
 	 * @since 0.1.0
 	 */
-	chapters?: {
-		/**
-		 * Número total de capítulos da obra.
-		 * @since 0.1.0
-		 */
-		total: number;
-	};
+	chapters?: number;
 
 	/**
 	 * Constructor da classe.
@@ -229,9 +223,7 @@ export default class MalPage {
 		};
 
 		this.volumes = data.volumes;
-		this.chapters = {
-			total: data.chapters
-		};
+		this.chapters = data.chapters;
 
 		if (beautify) {
 			this.titles.principal = format(this.titles.principal);
@@ -280,7 +272,7 @@ export default class MalPage {
 }
 
 /**
- * Verifica se um gênero é válido no MyAnimeList.
+ * Verifica se um gênero é válido na Tsuki Mangás.
  * @private
  * @param input Possível gênero.
  * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.

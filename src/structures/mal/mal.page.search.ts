@@ -59,12 +59,7 @@ export default class MalPageSearch {
 			`procurar **${this.query}**`
 		)) as ReceivedFromApi;
 
-		for (const result of request.results.values()) {
-			if (
-				result.title ===
-				'Demon Ruler: Teiji ni Kaeritai Otoko no Yarisugi Leveling'
-			)
-				console.log(result);
+		for (const result of request.results.values())
 			this.results.push({
 				id: result.mal_id,
 
@@ -86,7 +81,6 @@ export default class MalPageSearch {
 				volumes: result.volumes || null,
 				chapters: result.chapters || null
 			});
-		}
 
 		return this;
 	}

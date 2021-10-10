@@ -218,19 +218,23 @@ export async function createMultipartPayload(
 					)}\r\n`
 				);
 			else {
-				dataArray.push(
-					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
-						'_path',
-						property.endsWith('_path_array') ? '[]' : ''
-					)}"; filename="${
-						parse(object[property] as string).base
-					}"\r\nContent-Type: ${
-						object[property].toString().endsWith('png')
-							? 'image/png'
-							: 'image/jpeg'
-					}\r\n\r\n`
-				);
-				dataArray.push(readFileSync(object[property].toString()));
+				if (typeof object[property] === 'string')
+					object[property] = [object[property] as string];
+
+				for (const path of (object[property] as string[]).values()) {
+					dataArray.push(
+						`--${boundary}\r\nContent-Disposition: form-data; name="${property
+							.replace('_path', property.endsWith('_path_array') ? '[]' : '')
+							.replace('_array', '')}"; filename="${
+							parse(path).base
+						}"\r\nContent-Type: ${
+							object[property].toString().endsWith('png')
+								? 'image/png'
+								: 'image/jpeg'
+						}\r\n\r\n`
+					);
+					dataArray.push(readFileSync(path));
+				}
 			}
 		// ---------- \\
 		else if (property.endsWith('_array'))

@@ -167,7 +167,7 @@ export default class TmChapter {
 
 	/**
 	 * Upar um capítulo na Tsuki Mangás.
-	 * É suposto preencher o número (e título se houver) antes de executar esta função.
+	 * É suposto preencher o Id da obra e número (e título se houver) do capítulo antes de executar esta função.
 	 * @param scans Lista das scans que fizeram o capítulo.
 	 * @param imagesPaths Lista dos caminhos de todas as imagens do capítulo.
 	 * @returns Retorna esta classe preenchida.
@@ -178,7 +178,7 @@ export default class TmChapter {
 			payload = await createMultipartPayload(payloadObject),
 			request = (await apiRequest(
 				'tm',
-				'mangas',
+				'chapter/versions/upload',
 				`upar o capítulo **${this.number}** da página **${this.ids?.page}**`,
 				'POST',
 				payload

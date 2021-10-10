@@ -371,8 +371,6 @@ export default class TmPage {
 	}
 
 	async edit(coverPath?: string, bannerPath?: string): Promise<TmPage> {
-		console.log(this);
-
 		if (!this.ids?.tm)
 			throw new Error(
 				"Você tem que usar o método 'get' para preencher este objeto ou então preenchê-lo manualmente."
@@ -439,7 +437,7 @@ function generatePayloadObject(
 	page: TmPage,
 	coverPath?: string,
 	bannerPath?: string
-): Record<string, string[] | string | number> {
+): Record<string, string[] | string | number[] | number> {
 	return {
 		dex_id: page.ids?.md ?? '',
 		mal_id: page.ids?.mal ?? '',
@@ -471,12 +469,13 @@ function generatePayloadObject(
 		cover_path: bannerPath ?? ''
 	};
 }
+
 /**
  * Objeto recebido ao chamar a API.
  * @private
  * @since 0.1.0
  */
-type PageReceivedFromApi = {
+export type PageReceivedFromApi = {
 	id: number;
 	url: string;
 	title: string;

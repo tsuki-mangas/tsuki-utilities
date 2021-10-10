@@ -1,10 +1,9 @@
-// Utils
-import {
-	MalFormatsTypePt,
-	MalFormatsTypeEn,
-	MalFormats
-} from '../../types/mal.types';
 import { apiRequest, format } from '../../utils';
+import {
+	MalFormats,
+	MalFormatsTypeEn,
+	MalFormatsTypePt
+} from '../../types/mal.types';
 
 /**
  * Classe de interação com a pesquisa de uma obra no MyAnimeList.

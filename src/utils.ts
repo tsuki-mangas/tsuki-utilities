@@ -298,7 +298,7 @@ export async function apiRequest(
 		await checkEnvFile();
 		if (!process.env.TM_BB_TOKEN)
 			throw new Error('Token de block-bypass da Tsuki Mangás inválido!');
-		if (method != 'GET' && !process.env.TM_TOKEN)
+		if (method !== 'GET' && !process.env.TM_TOKEN)
 			throw new Error('Token da Tsuki Mangás inválido!');
 	}
 

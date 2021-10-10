@@ -209,21 +209,29 @@ export async function createMultipartPayload(
 	for (const property of Object.keys(object).values()) {
 		if (object[property] === undefined) continue;
 		// ---------- \\
-		else if (property.endsWith('_path')) {
-			dataArray.push(
-				`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
-					'_path',
-					''
-				)}"; filename="${
-					parse(object[property] as string).base
-				}"\r\nContent-Type: ${
-					object[property].toString().endsWith('png')
-						? 'image/png'
-						: 'image/jpeg'
-				}\r\n\r\n`
-			);
-			dataArray.push(readFileSync(object[property].toString()));
-		}
+		else if (property.endsWith('_path'))
+			if (object[property] === '')
+				dataArray.push(
+					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
+						'_path',
+						''
+					)}\r\n`
+				);
+			else {
+				dataArray.push(
+					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
+						'_path',
+						''
+					)}"; filename="${
+						parse(object[property] as string).base
+					}"\r\nContent-Type: ${
+						object[property].toString().endsWith('png')
+							? 'image/png'
+							: 'image/jpeg'
+					}\r\n\r\n`
+				);
+				dataArray.push(readFileSync(object[property].toString()));
+			}
 		// ---------- \\
 		else if (property.endsWith('_array'))
 			if (!Array.isArray(object[property])) continue;
@@ -238,7 +246,7 @@ export async function createMultipartPayload(
 								'[]'
 							)}"\r\n\r\n`
 						);
-						dataArray.push(value);
+						dataArray.push(value + '\r\n');
 					});
 			}
 		// ---------- \\
@@ -267,7 +275,7 @@ export async function createMultipartPayload(
  * @private
  * @param website Iniciais do site.
  * @param endpoint Endpoint da API.
- * @param action Porque esta chamada foi feita?
+ * @param action Motivo da chamada.
  * @param method Método HTTP.
  * @param requestPayload Objeto Json ou Buffer.
  * @param additionalHeaders Objeto de headers adicionais.
@@ -306,9 +314,10 @@ export async function apiRequest(
 	} else if (website === 'mal') headers['If-None-Match'] = 'ETag';
 	else if (website === 'al') headers['Accept'] = 'application/json';
 
-	if (requestPayload instanceof Buffer)
+	if (requestPayload instanceof Buffer) {
 		headers['Content-Type'] = `multipart/form-data; boundary=${boundary}`;
-	else headers['Content-Type'] = 'application/json';
+		headers['Content-Length'] = requestPayload.byteLength.toString();
+	} else headers['Content-Type'] = 'application/json';
 
 	Object.assign(headers, additionalHeaders);
 

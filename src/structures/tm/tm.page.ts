@@ -351,36 +351,13 @@ export default class TmPage {
 
 	/**
 	 * Cria uma página na Tsuki Mangás.
-	 * @param page Informações da página.
+	 * @param coverPath Caminho da cover da obra.
+	 * @param bannerPath Caminho do banner dao bra.
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.3
 	 */
-	async create(page: PageCreationType): Promise<TmPage> {
-		const payloadObject = {
-				dex_id: page.mdId ?? '',
-				mal_id: page.malId ?? '',
-				anilist_id: page.alId ?? '',
-
-				trailer: page.trailer ?? '',
-
-				title: page.principalTitle ?? '',
-				titles_array: page.alternativeTitles,
-
-				author: page.authors?.join(', ') ?? '',
-				artist: page.artists?.join(', ') ?? '',
-
-				format: page.format,
-
-				demography: page.demographic,
-
-				adult_content: page.adult ? 1 : 0,
-				status: page.status ?? 'Ativo',
-				synopsis: page.synopsis ?? '',
-				genres_array: page.genres,
-
-				poster_path: page.coverPath,
-				banner_path: page.bannerPath
-			} as Record<string, string[] | string | number>,
+	async create(coverPath: string, bannerPath?: string): Promise<TmPage> {
+		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
 			payload = await createMultipartPayload(payloadObject),
 			request = (await apiRequest(
 				'tm',
@@ -389,6 +366,30 @@ export default class TmPage {
 				'POST',
 				payload
 			)) as PageReceivedFromApi;
+
+		return new TmPage(request);
+	}
+
+	async edit(coverPath?: string, bannerPath?: string): Promise<TmPage> {
+		console.log(this);
+
+		if (!this.ids?.tm)
+			throw new Error(
+				"Você tem que usar o método 'get' para preencher este objeto ou então preenchê-lo manualmente."
+			);
+
+		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
+			payload = await createMultipartPayload(payloadObject);
+
+		console.log(payload.toString());
+
+		const request = (await apiRequest(
+			'tm',
+			`mangas/${this.ids?.tm}`,
+			`editar a página de **${this.titles?.principal}**`,
+			'POST',
+			payload
+		)) as PageReceivedFromApi;
 
 		return new TmPage(request);
 	}
@@ -425,6 +426,51 @@ function inputIsGenre(input: string): input is TmGenresType {
 	return Object.keys(TmGenres).includes(input);
 }
 
+/**
+ * Cria um objeto de uma página a enviar para a Api da Tsuki Mangás (para chamadas POST).
+ * @private
+ * @param page Classe da páginda.
+ * @param coverPath Caminho da cover se houver.
+ * @param bannerPath Caminho do banner se houver.
+ * @returns Retorna um objeto que vai ser tratado e depois enviado à Api da Tsuki Mangás.
+ * @since 0.1.3
+ */
+function generatePayloadObject(
+	page: TmPage,
+	coverPath?: string,
+	bannerPath?: string
+): Record<string, string[] | string | number> {
+	return {
+		dex_id: page.ids?.md ?? '',
+		mal_id: page.ids?.mal ?? '',
+		anilist_id: page.ids?.al ?? '',
+
+		trailer: page.links?.trailer ?? '',
+
+		title: page.titles?.principal ?? '',
+		titles_array:
+			page.titles && page.titles.alternatives.length
+				? page.titles.alternatives
+				: [],
+
+		author: page.authors?.join(', ') ?? '',
+		artist: page.artists?.join(', ') ?? '',
+
+		format: page.format?.id ?? '',
+
+		demography: page.demographic?.id ?? '',
+
+		adult_content: page.adult ? 1 : 0,
+		status: page.status ?? 'Ativo',
+		synopsis: page.synopsis ?? '',
+		genres_array: page.genres?.length ? page.genres : [],
+
+		// Cover na Tsuki
+		poster_path: coverPath ?? '',
+		// Banner na Tsuki
+		cover_path: bannerPath ?? ''
+	};
+}
 /**
  * Objeto recebido ao chamar a API.
  * @private
@@ -469,28 +515,4 @@ type PageReceivedFromApi = {
  */
 type SearchReceivedFromApi = {
 	data: PageReceivedFromApi[];
-};
-
-/**
- * Informações necessárias para a criação de uma página na Tsuki Mangás.
- * @private
- * @since 0.1.3
- */
-type PageCreationType = {
-	mdId?: string;
-	alId?: number;
-	malId?: number;
-	trailer?: string;
-	principalTitle: string;
-	alternativeTitles: string[];
-	authors?: string[];
-	artists?: string[];
-	format: 0 | 1 | 2 | 3;
-	demographic: 0 | 1 | 2 | 3;
-	adult: boolean;
-	status?: TmStatuses;
-	synopsis?: string;
-	genres?: TmGenresType[];
-	coverPath: string;
-	bannerPath?: string;
 };

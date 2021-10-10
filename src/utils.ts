@@ -315,6 +315,8 @@ export async function apiRequest(
 	if (website === 'tm') {
 		headers['Authorization'] = process.env.TM_TOKEN as string;
 		headers['Session-App-Key'] = process.env.TM_BB_TOKEN as string;
+		if (process.env.TM_RLB_TOKEN)
+			headers['X-CSRF-TOKEN'] = process.env.TM_RLB_TOKEN;
 	} else if (website === 'mal') headers['If-None-Match'] = 'ETag';
 	else if (website === 'al') headers['Accept'] = 'application/json';
 

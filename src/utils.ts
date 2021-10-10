@@ -202,14 +202,14 @@ function handleError(
  * @since 0.1.3
  */
 export async function createMultipartPayload(
-	object: Record<string, string[] | string | number>
+	object: Record<string, string[] | string | number[] | number>
 ): Promise<Buffer> {
 	const dataArray: Array<string | Buffer> = [];
 
 	for (const property of Object.keys(object).values()) {
 		if (object[property] === undefined) continue;
 		// ---------- \\
-		else if (property.endsWith('_path'))
+		else if (property.endsWith('_path') || property.endsWith('_path_array'))
 			if (object[property] === '')
 				dataArray.push(
 					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
@@ -221,7 +221,7 @@ export async function createMultipartPayload(
 				dataArray.push(
 					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
 						'_path',
-						''
+						property.endsWith('_path_array') ? '[]' : ''
 					)}"; filename="${
 						parse(object[property] as string).base
 					}"\r\nContent-Type: ${

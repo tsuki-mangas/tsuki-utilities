@@ -1,6 +1,7 @@
 import TmScan, { ReceivedFromApi as TmScanReceivedFromApi } from './tm.scan';
 import TmUser, { ReceivedFromApi as TmUserReceivedFromApi } from './tm.user';
-import { apiRequest, format } from '../../utils';
+import { apiRequest, createMultipartPayload, format } from '../../utils';
+import { PageReceivedFromApi } from './tm.page';
 
 export default class TmChapter {
 	/**
@@ -163,6 +164,78 @@ export default class TmChapter {
 
 		return results;
 	}
+
+	/**
+	 * Upar um capítulo na Tsuki Mangás.
+	 * É suposto preencher o número (e título se houver) antes de executar esta função.
+	 * @param scans Lista das scans que fizeram o capítulo.
+	 * @param imagesPaths Lista dos caminhos de todas as imagens do capítulo.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.1.4
+	 */
+	async upload(scans: number[], imagesPaths: string[]): Promise<TmChapter> {
+		const payloadObject = generatePayloadObject(this, scans, imagesPaths),
+			payload = await createMultipartPayload(payloadObject),
+			request = (await apiRequest(
+				'tm',
+				'mangas',
+				`upar o capítulo **${this.number}** da página **${this.ids?.page}**`,
+				'POST',
+				payload
+			)) as UploadedChapterReceivedFromApi;
+
+		/**
+		 * A classe é preenchida aqui pois adaptar o constructor é muito trabalhoso.
+		 */
+		this.ids = {
+			page: Number(request.chapter.manga_id),
+			chapter: request.chapter_id,
+			uploader: request.user_id
+		};
+
+		this.title = request.chapter.title;
+		this.number = request.chapter.number;
+
+		this.uploader = null;
+
+		this.versions = [
+			{
+				id: request.id,
+				pages: request.total_pages,
+				scans: request.scans.map((scanObject) => new TmScan(scanObject.scan)),
+				createdAt: new Date(request.created_at.replace(/-/g, '/'))
+			}
+		];
+
+		this.views = 0;
+
+		return this;
+	}
+}
+
+/**
+ * Cria um objeto de um capítulo a enviar para a Api da Tsuki Mangás (para chamadas POST).
+ * @param scans Lista das scans que fizeram o capítulo.
+ * @param imagesPaths Lista dos caminhos de todas as imagens do capítulo.
+ * @returns Retorna um objeto que vai ser tratado e depois enviado à Api da Tsuki Mangás.
+ * @since 0.1.4
+ */
+function generatePayloadObject(
+	chapter: TmChapter,
+	scansIds: number[],
+	imagesPaths: string[]
+): Record<string, string[] | string | number[] | number> {
+	return {
+		manga_id: chapter.ids?.page ?? '',
+
+		title: chapter.title ?? '',
+		number: chapter.number ?? '',
+
+		scans_array: scansIds.length ? scansIds : [],
+
+		// Imagens
+		files_path_array: imagesPaths ?? ''
+	};
 }
 
 /**
@@ -214,3 +287,21 @@ type PartialListReceivedFromApi = {
 		author?: TmUserReceivedFromApi;
 	}>;
 };
+
+/**
+ * Objeto recebido ao chamar o endpoint de upload.
+ * @private
+ * @since 0.1.4
+ */
+type UploadedChapterReceivedFromApi =
+	PartialListReceivedFromApi['data'][number]['versions'][number] & {
+		chapter: {
+			id: number;
+			manga: Exclude<PageReceivedFromApi, 'titles' | 'genres'>;
+			manga_id: string; // Sim, a Api retorna string aqui
+			number: string;
+			title: string;
+			updated_at: string; // Sim, a Api retorna string aqui
+			user_id: number;
+		};
+	};

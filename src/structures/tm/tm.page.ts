@@ -377,17 +377,14 @@ export default class TmPage {
 			);
 
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
-			payload = await createMultipartPayload(payloadObject);
-
-		console.log(payload.toString());
-
-		const request = (await apiRequest(
-			'tm',
-			`mangas/${this.ids?.tm}`,
-			`editar a página de **${this.titles?.principal}**`,
-			'POST',
-			payload
-		)) as PageReceivedFromApi;
+			payload = await createMultipartPayload(payloadObject),
+			request = (await apiRequest(
+				'tm',
+				`mangas/${this.ids?.tm}`,
+				`editar a página de **${this.titles?.principal}**`,
+				'POST',
+				payload
+			)) as PageReceivedFromApi;
 
 		return new TmPage(request);
 	}

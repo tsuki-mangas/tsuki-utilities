@@ -6,14 +6,22 @@ import {
 	MdContentRating,
 	MdDemographics,
 	MdGenres,
-	MdGenresTypeEn,
-	MdGenresTypePt,
+	MdGenresIdType,
+	MdGenresLabelTypeEn,
+	MdGenresLabelTypePt,
 	MdLanguagesType,
 	MdLanguagesTwoLettersType,
 	MdRelationshipTypes,
 	MdLanguages
 } from '../../types/md.types';
-import { TmDemographics, TmFormats } from '../../types/tm.types';
+import {
+	TmFormats,
+	TmFormatsIdType,
+	TmFormatsLabelType,
+	TmDemographics,
+	TmDemographicsLabelType,
+	TmDemographicsIdType
+} from '../../types/tm.types';
 
 /**
  * Classe de interação com obras da MangaDex.
@@ -100,16 +108,22 @@ export default class MdPage {
 	artists?: string[];
 
 	/**
-	 * Formato da obra.
+	 * Formato da obra equivalente ao da Tsuki Mangás.
 	 * @since 0.1.0
 	 */
-	format?: keyof typeof TmFormats;
+	format?: {
+		tmId: TmFormatsIdType;
+		label: TmFormatsLabelType;
+	} | null;
 
 	/**
 	 * Demografia da obra.
-	 * @since 0.1.0
+	 * @since 0.1.3
 	 */
-	demographic?: keyof typeof TmDemographics | null;
+	demographic?: {
+		tmId: TmDemographicsIdType;
+		label: TmDemographicsLabelType;
+	} | null;
 
 	/**
 	 * Língua original da obra.
@@ -136,7 +150,7 @@ export default class MdPage {
 	 * Gêneros da obra.
 	 * @since 0.1.0
 	 */
-	genres?: Array<MdGenresTypePt | 'Hentai' | 'Ecchi'>;
+	genres?: Array<MdGenresLabelTypePt | 'Hentai' | 'Ecchi'>;
 
 	/**
 	 * Último volume oficial lançado.
@@ -228,21 +242,20 @@ export default class MdPage {
 			if (artistName?.length) this.artists.push(artistName);
 		}
 
-		switch (data.attributes.originalLanguage) {
-			case 'ko':
-				this.format = 'Manhwa';
-				break;
-			case 'zh':
-			case 'zh-hk':
-				this.format = 'Manhua';
-				break;
-			default:
-				this.format = 'Mangá';
-		}
+		const originalLanguage = data.attributes.originalLanguage;
+		if (originalLanguage === 'ko')
+			this.format = { tmId: TmFormats['Manhwa'], label: 'Manhwa' };
+		else if (originalLanguage === 'zh' || originalLanguage === 'zh-hk')
+			this.format = { tmId: TmFormats['Manhua'], label: 'Manhua' };
+		else this.format = { tmId: TmFormats['Mangá'], label: 'Mangá' };
 
-		this.demographic = capitalize(
+		const demographic = capitalize(
 			data.attributes.publicationDemographic
-		) as this['demographic'];
+		) as TmDemographicsLabelType;
+		this.demographic = {
+			tmId: TmDemographics[demographic],
+			label: demographic
+		};
 
 		this.language = MdLanguages.find(
 			(languageObject) =>
@@ -254,13 +267,9 @@ export default class MdPage {
 			data.attributes.description['en'] ||
 			null;
 
-		function isValidGenre(value: string): value is keyof typeof MdGenres {
-			return value in MdGenres;
-		}
-
 		this.genres = [];
 		for (const genre of data.attributes.tags.values())
-			if (isValidGenre(genre.id))
+			if (inputIsGenre(genre.id))
 				this.genres.push(MdGenres[genre.id].translated);
 
 		this.adult = false;
@@ -331,6 +340,17 @@ export default class MdPage {
 }
 
 /**
+ * Verifica se um gênero é válido na Tsuki Mangás.
+ * @private
+ * @param input Possível gênero.
+ * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
+ * @since 0.1.3
+ */
+function inputIsGenre(input: string): input is MdGenresIdType {
+	return Object.keys(MdGenres).includes(input);
+}
+
+/**
  * Objeto recebido ao chamar a API.
  * @since 0.1.0
  */
@@ -360,7 +380,7 @@ type PageReceivedFromApi = {
 				id: string;
 				attributes: {
 					name: {
-						[key in MdLanguagesTwoLettersType]: MdGenresTypeEn;
+						[key in MdLanguagesTwoLettersType]: MdGenresLabelTypeEn;
 					};
 				};
 			}>;

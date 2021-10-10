@@ -5,11 +5,15 @@ import {
 	formatArray
 } from '../../utils';
 import {
-	TmDemographics,
 	TmFormats,
+	TmFormatsIdType,
+	TmFormatsLabelType,
+	TmDemographics,
+	TmDemographicsIdType,
+	TmDemographicsLabelType,
+	TmStatuses,
 	TmGenres,
-	TmGenresType,
-	TmStatuses
+	TmGenresType
 } from '../../types/tm.types';
 
 /**
@@ -116,8 +120,8 @@ export default class TmPage {
 	 * @since 0.1.0
 	 */
 	format?: {
-		id: 0 | 1 | 2 | 3;
-		label: keyof typeof TmFormats;
+		id: TmFormatsIdType;
+		label: TmFormatsLabelType;
 	} | null;
 
 	/**
@@ -125,8 +129,8 @@ export default class TmPage {
 	 * @since 0.1.0
 	 */
 	demographic?: {
-		id: 0 | 1 | 2 | 3;
-		label: keyof typeof TmDemographics;
+		id: TmDemographicsIdType;
+		label: TmDemographicsLabelType;
 	} | null;
 
 	/**
@@ -251,17 +255,17 @@ export default class TmPage {
 		this.authors = data.author?.length ? data.author.split(', ') : [];
 		this.artists = data.artist?.length ? data.artist.split(', ') : [];
 
-		if (data.format >= 1 || data.format <= 3)
+		if (data.format >= 1 && data.format <= 4)
 			this.format = {
-				id: data.format as 0 | 1 | 2 | 3,
-				label: TmFormats[data.format] as keyof typeof TmFormats
+				id: data.format as TmFormatsIdType,
+				label: TmFormats[data.format] as TmFormatsLabelType
 			};
 		else this.format = null;
 
-		if (data.demography >= 1 || data.demography <= 3)
+		if (data.demography >= 1 && data.demography <= 4)
 			this.demographic = {
-				id: data.demography as 0 | 1 | 2 | 3,
-				label: TmDemographics[data.demography] as keyof typeof TmDemographics
+				id: data.demography as TmDemographicsIdType,
+				label: TmDemographics[data.demography] as TmDemographicsLabelType
 			};
 		else this.demographic = null;
 

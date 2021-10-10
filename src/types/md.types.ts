@@ -414,6 +414,8 @@ export const MdGenres = {
 		translated: 'Zumbis'
 	}
 } as const;
-export type MdGenresTypeEn = typeof MdGenres[keyof typeof MdGenres]['original'];
-export type MdGenresTypePt =
+export type MdGenresIdType = keyof typeof MdGenres;
+export type MdGenresLabelTypeEn =
+	typeof MdGenres[keyof typeof MdGenres]['original'];
+export type MdGenresLabelTypePt =
 	typeof MdGenres[keyof typeof MdGenres]['translated'];

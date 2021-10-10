@@ -22,7 +22,13 @@ export enum TmFormats {
 	'Manhua',
 	'Novel'
 }
-export type TmFormatsType = keyof typeof TmFormats;
+export type TmFormatsLabelType = keyof typeof TmFormats;
+/**
+ * Não se pode pegar nos Ids dinamicamente.
+ * export type TmFormatsIdType = typeof TmFormats[keyof typeof TmFormats];
+ * Esse type permite qualquer número, então tem que ser hard-coded mesmo.
+ */
+export type TmFormatsIdType = 1 | 2 | 3 | 4;
 
 /**
  * As 4 demografias associadas aos respetivos Ids.
@@ -34,9 +40,14 @@ export enum TmDemographics {
 	'Seinen',
 	'Josei'
 }
+export type TmDemographicsLabelType = keyof typeof TmDemographics;
+/**
+ * Mesmo motivo do TmFormatsIdType.
+ */
+export type TmDemographicsIdType = 1 | 2 | 3 | 4;
 
 /**
- * Gênero oficiais da Tsuki Mangás.
+ * Gêneros oficiais da Tsuki Mangás.
  * Última atualização: 14/08/2021.
  */
 export enum TmGenres {

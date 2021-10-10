@@ -41,11 +41,18 @@ export type MalFormatsTypePt = typeof MalFormats[keyof typeof MalFormats];
  * @since 0.1.0
  */
 export enum MalDemographics {
-	'Shoujo' = 25,
-	'Shounen' = 27,
-	'Seinen' = 41,
-	'Josei' = 42
+	Shoujo = 25,
+	Shounen = 27,
+	Seinen = 41,
+	Josei = 42
 }
+export type MalDemographicsLabelType = keyof typeof MalDemographics;
+/**
+ * Não se pode pegar nos Ids dinamicamente.
+ * export type MalDemographicsIdType = typeof MalDemographics[keyof typeof MalDemographics];
+ * Esse type permite qualquer número, então tem que ser hard-coded mesmo.
+ */
+export type MalDemographicsIdType = 25 | 27 | 41 | 42;
 
 /**
  * Gênero oficiais do MyAnimeList.

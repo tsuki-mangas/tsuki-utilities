@@ -37,12 +37,18 @@ export type AlFormatsTypeEn = keyof typeof AlFormats;
  * @since 0.1.3
  */
 export enum AlDemographics {
-	Shounen = 56,
-	Shoujo = 53,
 	Seinen = 27,
-	Josei = 50
+	Josei = 50,
+	Shoujo = 53,
+	Shounen = 56
 }
-export type AlDemographicsType = keyof typeof AlDemographics;
+export type AlDemographicsLabelType = keyof typeof AlDemographics;
+/**
+ * Não se pode pegar nos Ids dinamicamente.
+ * export type AlDemographicsIdType = typeof AlDemographics[keyof typeof AlDemographics];
+ * Esse type permite qualquer número, então tem que ser hard-coded mesmo.
+ */
+export type AlDemographicsIdType = 27 | 50 | 53 | 56;
 
 /**
  * Gêneros oficiais da AniList.

@@ -1,10 +1,18 @@
+import {
+	TmFormats,
+	TmFormatsLabelType,
+	TmFormatsIdType,
+	TmDemographics,
+	TmDemographicsLabelType,
+	TmDemographicsIdType
+} from '../../types/tm.types';
 import { apiRequest, format, formatArray } from '../../utils';
-import { TmFormatsType } from '../..';
 import {
 	AlFormats,
 	AlFormatsTypeEn,
 	AlDemographics,
-	AlDemographicsType,
+	AlDemographicsIdType,
+	AlDemographicsLabelType,
 	AlStatuses,
 	AlStatusesTypeEn,
 	AlStatusesTypePt,
@@ -109,18 +117,22 @@ export default class AlPage {
 	artists?: string[];
 
 	/**
-	 * Formato da obra.
-	 * @since 0.1.3
+	 * Formato da obra equivalente ao da Tsuki Mangás.
+	 * @since 0.1.0
 	 */
-	format?: TmFormatsType;
+	format?: {
+		tmId: TmFormatsIdType;
+		label: TmFormatsLabelType;
+	} | null;
 
 	/**
 	 * Demografia da obra.
 	 * @since 0.1.3
 	 */
 	demographic?: {
-		id: number;
-		label: AlDemographicsType;
+		tmId: TmDemographicsIdType;
+		alId: AlDemographicsIdType;
+		label: TmDemographicsLabelType;
 	} | null;
 
 	/**
@@ -252,20 +264,27 @@ export default class AlPage {
 		for (const tag of data.tags.values())
 			if (inputIsDemographic(tag.name))
 				this.demographic = {
-					id: tag.id,
+					tmId: TmDemographics[tag.name],
+					alId: AlDemographics[tag.name],
 					label: tag.name
 				};
 			else if (inputIsGenre(tag.name)) this.genres.push(AlGenres[tag.name]);
 			else if (inputIsTag(tag.id)) this.tags.push(AlTags[tag.id].translated);
 
 		if (data.format === 'ONE_SHOT') this.tags.push('One-shot');
-		this.format = AlFormats[data.format];
+		this.format = {
+			tmId: TmFormats[AlFormats[data.format]],
+			label: AlFormats[data.format]
+		};
 
 		if (!this.demographic) this.demographic = null;
 
-		if (this.language === 'JP') this.format = 'Mangá';
-		else if (this.language === 'KR') this.format = 'Manhwa';
-		else if (this.language === 'CN') this.format = 'Manhua';
+		if (this.language === 'JP')
+			this.format = { tmId: TmFormats['Mangá'], label: 'Mangá' };
+		else if (this.language === 'KR')
+			this.format = { tmId: TmFormats['Manhwa'], label: 'Manhwa' };
+		else if (this.language === 'CN')
+			this.format = { tmId: TmFormats['Manhua'], label: 'Manhua' };
 		else this.language = null;
 
 		this.volumes = data.volumes;
@@ -318,13 +337,13 @@ export default class AlPage {
 }
 
 /**
- * Verifica se um input é uma demografia (da Tsuki Mangás) válida.
+ * Verifica se um input é uma demografia válida.
  * @private
  * @param input Possível demografia.
  * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
  * @since 0.1.3
  */
-function inputIsDemographic(input: string): input is AlDemographicsType {
+function inputIsDemographic(input: string): input is AlDemographicsLabelType {
 	return Object.keys(AlDemographics).includes(input);
 }
 
@@ -399,7 +418,7 @@ type ReceivedFromApi = {
 			genres: AlGenresTypeEn[];
 			tags: Array<{
 				id: number;
-				name: AlTagsTypeEn | AlDemographicsType | string;
+				name: AlTagsTypeEn | AlDemographicsLabelType | string;
 			}>;
 			chapters: number | null;
 			volumes: number | null;

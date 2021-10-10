@@ -1,17 +1,25 @@
 import { apiRequest, format, formatArray } from '../../utils';
+import MalPageSearch from './mal.page.search';
 import {
-	MalDemographics,
+	TmFormats,
+	TmFormatsLabelType,
+	TmFormatsIdType,
+	TmDemographics,
+	TmDemographicsLabelType,
+	TmDemographicsIdType
+} from '../../types/tm.types';
+import {
 	MalFormats,
 	MalFormatsTypeEn,
-	MalFormatsTypePt,
-	MalGenres,
-	MalGenresTypeEn,
-	MalGenresTypePt,
+	MalDemographics,
+	MalDemographicsIdType,
 	MalStatuses,
 	MalStatusesTypeEn,
-	MalStatusesTypePt
+	MalStatusesTypePt,
+	MalGenres,
+	MalGenresTypeEn,
+	MalGenresTypePt
 } from '../../types/mal.types';
-import MalPageSearch from './mal.page.search';
 
 /**
  * Classe de interação com obras do MyAnimeList.
@@ -78,20 +86,23 @@ export default class MalPage {
 	staff?: string[];
 
 	/**
-	 * Formato da obra.
+	 * Formato da obra equivalente ao da Tsuki Mangás.
 	 * @since 0.1.0
 	 */
-	format?: MalFormatsTypePt;
+	format?: {
+		tmId: TmFormatsIdType;
+		label: TmFormatsLabelType;
+	} | null;
 
 	/**
 	 * Demografia da obra.
-	 * @since 0.1.0
+	 * @since 0.1.3
 	 */
 	demographic?: {
-		id: number;
-		// label: valueof<MalDemographics>;
-		label: keyof typeof MalDemographics;
-	};
+		tmId: TmDemographicsIdType;
+		malId: MalDemographicsIdType;
+		label: TmDemographicsLabelType;
+	} | null;
 
 	/**
 	 * Obra adulta?
@@ -190,19 +201,28 @@ export default class MalPage {
 				: staffMember
 		);
 
+		this.format = {
+			tmId: TmFormats[MalFormats[data.type]],
+			label: MalFormats[data.type]
+		};
+
 		this.status = MalStatuses[data.status] || null;
 		this.synopsis = data.synopsis || null;
 
 		this.genres = [];
 		for (const genre of data.genres.values())
-			if (MalDemographics[genre.mal_id])
+			if (inputIsDemographic(genre.mal_id))
 				this.demographic = {
-					id: genre.mal_id,
-					label: MalDemographics[genre.mal_id] as keyof typeof MalDemographics
+					tmId: TmDemographics[
+						MalDemographics[genre.mal_id] as TmDemographicsLabelType
+					],
+					malId: genre.mal_id,
+					label: MalDemographics[genre.mal_id] as TmDemographicsLabelType
 				};
 			else if (inputIsGenre(genre.mal_id))
 				this.genres.push(MalGenres[genre.mal_id].translated);
 
+		if (!this.demographic) this.demographic = null;
 		this.adult = this.genres.includes('Hentai');
 
 		switch (data.type) {
@@ -213,7 +233,6 @@ export default class MalPage {
 				this.genres.push('Doujinshi');
 				break;
 		}
-		this.format = MalFormats[data.type];
 
 		this.rating = {
 			total: data.scored_by,
@@ -269,6 +288,17 @@ export default class MalPage {
 	async search(query: string, limit = 5): Promise<MalPageSearch> {
 		return new MalPageSearch(query, limit).run();
 	}
+}
+
+/**
+ * Verifica se um input é uma demografia válida.
+ * @private
+ * @param input Possível demografia.
+ * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.
+ * @since 0.1.3
+ */
+function inputIsDemographic(input: number): input is MalDemographicsIdType {
+	return input in MalDemographics;
 }
 
 /**

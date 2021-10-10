@@ -72,7 +72,7 @@ export default class TmScan {
 	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: ReceivedFromApi, beautify = true) {
+	constructor(data?: ScanReceivedFromApi, beautify = true) {
 		if (!data) return this;
 
 		this.id = data.id;
@@ -116,7 +116,7 @@ export default class TmScan {
 				'tm',
 				`scans/${id}`,
 				`obter a scan com Id **${id}**`
-			)) as ReceivedFromApi
+			)) as ScanReceivedFromApi
 		);
 	}
 
@@ -132,8 +132,28 @@ export default class TmScan {
 				'tm',
 				`scans/${slug}`,
 				`obter a scan ${slug}`
-			)) as ReceivedFromApi
+			)) as ScanReceivedFromApi
 		);
+	}
+
+	/**
+	 * Procurar alguma scan na Tsuki Mangás.
+	 * @param name Nome da scan.
+	 * @returns Retorna uma array de classes.
+	 * @since 0.1.6
+	 */
+	async search(name: string): Promise<TmScan[]> {
+		const request = (await apiRequest(
+				'tm',
+				`scans?name=${name}`,
+				`procurar a scan ${name}`
+			)) as SearchReceivedFromApi,
+			results: TmScan[] = [];
+
+		for (const result of request.data.values())
+			results.push(new TmScan(result));
+
+		return results;
 	}
 }
 
@@ -142,7 +162,7 @@ export default class TmScan {
  * @private
  * @since 0.1.0
  */
-export type ReceivedFromApi = {
+export type ScanReceivedFromApi = {
 	id: number;
 	url: string;
 	name: string;
@@ -154,4 +174,13 @@ export type ReceivedFromApi = {
 	members: Array<{
 		user: UserReceivedFromApi;
 	}>;
+};
+
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.1.6
+ */
+type SearchReceivedFromApi = {
+	data: ScanReceivedFromApi[];
 };

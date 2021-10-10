@@ -1,7 +1,9 @@
-import TmScan, { ReceivedFromApi as TmScanReceivedFromApi } from './tm.scan';
 import TmUser, { ReceivedFromApi as TmUserReceivedFromApi } from './tm.user';
 import { apiRequest, createMultipartPayload, format } from '../../utils';
 import { PageReceivedFromApi } from './tm.page';
+import TmScan, {
+	ScanReceivedFromApi as TmScanReceivedFromApi
+} from './tm.scan';
 
 export default class TmChapter {
 	/**

@@ -358,7 +358,7 @@ export default class TmPage {
 	 */
 	async create(coverPath: string, bannerPath?: string): Promise<TmPage> {
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
-			payload = await createMultipartPayload(payloadObject),
+			payload = createMultipartPayload(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				'mangas',
@@ -377,7 +377,7 @@ export default class TmPage {
 			);
 
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
-			payload = await createMultipartPayload(payloadObject),
+			payload = createMultipartPayload(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				`mangas/${this.ids?.tm}`,

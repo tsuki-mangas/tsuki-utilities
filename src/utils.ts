@@ -201,9 +201,9 @@ function handleError(
  * @returns Retorna um Buffer.
  * @since 0.1.3
  */
-export async function createMultipartPayload(
+export function createMultipartPayload(
 	object: Record<string, string[] | string | number[] | number>
-): Promise<Buffer> {
+): Buffer {
 	const dataArray: Array<string | Buffer> = [];
 
 	for (const property of Object.keys(object).values()) {

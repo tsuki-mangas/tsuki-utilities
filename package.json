@@ -1,8 +1,11 @@
 {
+	"name": "tsuki-utilities",
+	"author": "rdx",
 	"version": "0.1.7",
 	"license": "MIT",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
+	"module": "dist/tsuki-utilities.esm.js",
 	"files": [
 		"dist",
 		"src"
@@ -11,18 +14,17 @@
 		"node": ">=14"
 	},
 	"scripts": {
-		"start": "tsdx watch",
-		"build": "tsdx build",
-		"test": "tsdx test",
-		"lint": "tsdx lint src",
-		"prepare": "tsdx build",
+		"start": "dts watch",
+		"build": "dts build",
+		"lint": "dts lint",
+		"prepare": "dts build",
 		"size": "size-limit",
 		"analyze": "size-limit --why"
 	},
 	"peerDependencies": {},
 	"husky": {
 		"hooks": {
-			"pre-commit": "tsdx lint"
+			"pre-commit": "dts lint"
 		}
 	},
 	"eslintConfig": {
@@ -33,7 +35,6 @@
 			"project": "tsconfig.json"
 		},
 		"ignorePatterns": [
-			"*.test.ts",
 			"*.js"
 		],
 		"plugins": [
@@ -123,12 +124,6 @@
 		"endOfLine": "auto",
 		"singleQuote": true
 	},
-	"jest": {
-		"testTimeout": 120000
-	},
-	"name": "tsuki-utilities",
-	"author": "rdx",
-	"module": "dist/tsuki-utilities.esm.js",
 	"size-limit": [
 		{
 			"path": "dist/tsuki-utilities.cjs.production.min.js",
@@ -140,10 +135,10 @@
 		}
 	],
 	"devDependencies": {
-		"@size-limit/preset-small-lib": "^5.0.3",
-		"@weiran.zsd/tsdx": "^0.16.2",
+		"@size-limit/preset-small-lib": "^6.0.2",
+		"dts-cli": "^0.19.2",
 		"husky": "^7.0.2",
-		"size-limit": "^5.0.3",
+		"size-limit": "^6.0.1",
 		"tslib": "^2.3.1",
 		"typescript": "^4.4.3"
 	}

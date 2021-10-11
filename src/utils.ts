@@ -3,14 +3,14 @@ import { dirname, join, parse } from 'path';
 import { IncomingMessage } from 'http';
 import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
+import FormData from 'form-data';
 import { request } from 'https';
 import {
 	AvailableWebsites,
 	AvailableWebsitesShort
 } from './types/package.types';
 
-const maxRequestsPerSecond = 10,
-	boundary = `tsuki-boundary-${Date.now().toString(16)}`;
+const maxRequestsPerSecond = 10;
 let activeRequests = 0;
 
 /**
@@ -201,40 +201,29 @@ function handleError(
  * @returns Retorna um Buffer.
  * @since 0.1.3
  */
-export function createMultipartPayload(
+export function createFormData(
 	object: Record<string, string[] | string | number[] | number>
-): Buffer {
-	const dataArray: Array<string | Buffer> = [];
+): FormData {
+	const form = new FormData();
 
-	for (const property of Object.keys(object).values()) {
+	for (const property of Object.keys(object).values())
 		if (object[property] === undefined) continue;
 		// ---------- \\
 		else if (property.endsWith('_path') || property.endsWith('_path_array'))
 			if (object[property] === '')
-				dataArray.push(
-					`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
-						'_path',
-						''
-					)}\r\n`
-				);
+				form.append(property.replace('path', ''), '');
 			else {
 				if (typeof object[property] === 'string')
 					object[property] = [object[property] as string];
 
-				for (const path of (object[property] as string[]).values()) {
-					dataArray.push(
-						`--${boundary}\r\nContent-Disposition: form-data; name="${property
+				for (const path of (object[property] as string[]).values())
+					form.append(
+						property
 							.replace('_path', property.endsWith('_path_array') ? '[]' : '')
-							.replace('_array', '')}"; filename="${
-							parse(path).base
-						}"\r\nContent-Type: ${
-							object[property].toString().endsWith('png')
-								? 'image/png'
-								: 'image/jpeg'
-						}\r\n\r\n`
+							.replace('_array', ''),
+						readFileSync(path),
+						parse(path).base
 					);
-					dataArray.push(readFileSync(path));
-				}
 			}
 		// ---------- \\
 		else if (property.endsWith('_array'))
@@ -243,38 +232,13 @@ export function createMultipartPayload(
 				const propertyArray = object[property] as string[];
 				if (propertyArray.length === 0) continue;
 				else
-					propertyArray.forEach((value, i) => {
-						dataArray.push(
-							`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
-								'_array',
-								'[]'
-							)}"\r\n\r\n`
-						);
-						dataArray.push(
-							value + (propertyArray.length === i + 1 ? '' : '\r\n')
-						);
-					});
+					for (const value of propertyArray.values())
+						form.append(property.replace('_array', '[]'), value);
 			}
 		// ---------- \\
-		else {
-			dataArray.push(
-				`--${boundary}\r\nContent-Disposition: form-data; name="${property}"\r\n\r\n`
-			);
-			dataArray.push(object[property].toString());
-		}
+		else form.append(property, object[property].toString());
 
-		dataArray.push(`\r\n`);
-	}
-
-	dataArray.push(`--${boundary}--\r\n`);
-
-	return Buffer.concat(
-		dataArray.map((element) =>
-			element instanceof Buffer
-				? Buffer.from(element)
-				: Buffer.from(element.toString(), 'utf8')
-		)
-	);
+	return form;
 }
 
 /**
@@ -294,7 +258,7 @@ export async function apiRequest(
 	endpoint: string,
 	action: string,
 	method = 'GET' as 'GET' | 'POST' | 'DELETE',
-	requestPayload = {} as Record<string, unknown> | Buffer,
+	requestPayload = {} as Record<string, unknown> | FormData,
 	additionalHeaders = {} as Record<string, string>
 ): Promise<unknown> {
 	if (website === 'tm') {
@@ -314,7 +278,7 @@ export async function apiRequest(
 			)
 		);
 
-	const headers = { ...additionalHeaders };
+	const headers: Record<string, string> = {};
 	if (website === 'tm') {
 		headers['Authorization'] = process.env.TM_TOKEN as string;
 		headers['Session-App-Key'] = process.env.TM_BB_TOKEN as string;
@@ -323,9 +287,11 @@ export async function apiRequest(
 	} else if (website === 'mal') headers['If-None-Match'] = 'ETag';
 	else if (website === 'al') headers['Accept'] = 'application/json';
 
-	if (requestPayload instanceof Buffer) {
-		headers['Content-Type'] = `multipart/form-data; boundary=${boundary}`;
-		headers['Content-Length'] = requestPayload.byteLength.toString();
+	if (requestPayload instanceof FormData) {
+		Object.assign(headers, requestPayload.getHeaders());
+		headers['Content-Length'] = requestPayload
+			.getBuffer()
+			.byteLength.toString();
 	} else headers['Content-Type'] = 'application/json';
 
 	Object.assign(headers, additionalHeaders);
@@ -359,11 +325,10 @@ export async function apiRequest(
 			}
 		);
 
-		if (method !== 'GET')
-			requestPayload instanceof Buffer
-				? req.write(requestPayload)
-				: req.write(JSON.stringify(requestPayload));
-
-		req.end();
+		if (requestPayload instanceof FormData) requestPayload.pipe(req);
+		else {
+			req.write(JSON.stringify(requestPayload));
+			req.end();
+		}
 	});
 }

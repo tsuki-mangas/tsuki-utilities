@@ -1,5 +1,5 @@
 import TmUser, { ReceivedFromApi as TmUserReceivedFromApi } from './tm.user';
-import { apiRequest, createMultipartPayload, format } from '../../utils';
+import { apiRequest, createFormData, format } from '../../utils';
 import { PageReceivedFromApi } from './tm.page';
 import TmScan, {
 	ScanReceivedFromApi as TmScanReceivedFromApi
@@ -191,7 +191,7 @@ export default class TmChapter {
 				imagesPaths,
 				title
 			),
-			payload = createMultipartPayload(payloadObject),
+			payload = createFormData(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				'chapter/versions/upload',

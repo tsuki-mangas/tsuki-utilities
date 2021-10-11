@@ -1,9 +1,4 @@
-import {
-	apiRequest,
-	createMultipartPayload,
-	format,
-	formatArray
-} from '../../utils';
+import { apiRequest, createFormData, format, formatArray } from '../../utils';
 import {
 	TmFormats,
 	TmFormatsIdType,
@@ -358,7 +353,7 @@ export default class TmPage {
 	 */
 	async create(coverPath: string, bannerPath?: string): Promise<TmPage> {
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
-			payload = createMultipartPayload(payloadObject),
+			payload = createFormData(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				'mangas',
@@ -377,7 +372,7 @@ export default class TmPage {
 			);
 
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
-			payload = createMultipartPayload(payloadObject),
+			payload = createFormData(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				`mangas/${this.ids?.tm}`,

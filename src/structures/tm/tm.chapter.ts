@@ -166,18 +166,32 @@ export default class TmChapter {
 
 		return results;
 	}
-
 	/**
 	 * Upar um capítulo na Tsuki Mangás.
 	 * É suposto preencher o Id da obra e número (e título se houver) do capítulo antes de executar esta função.
-	 * @param scans Lista das scans que fizeram o capítulo.
-	 * @param imagesPaths Lista dos caminhos de todas as imagens do capítulo.
+	 * @param pageId Id da página da obra na Tsuki Mangás.
+	 * @param number Número do capítulo.
+	 * @param scans Array das scans que fizeram o capítulo.
+	 * @param imagesPaths Array dos caminhos de todas as imagens do capítulo.
+	 * @param title Título do capítulo (se houver).
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.1.4
 	 */
-	async upload(scans: number[], imagesPaths: string[]): Promise<TmChapter> {
-		const payloadObject = generatePayloadObject(this, scans, imagesPaths),
-			payload = await createMultipartPayload(payloadObject),
+	async upload(
+		pageId: number,
+		number: string,
+		scans: number[],
+		imagesPaths: string[],
+		title?: string
+	): Promise<TmChapter> {
+		const payloadObject = generatePayloadObject(
+				pageId,
+				number,
+				scans,
+				imagesPaths,
+				title
+			),
+			payload = createMultipartPayload(payloadObject),
 			request = (await apiRequest(
 				'tm',
 				'chapter/versions/upload',
@@ -217,21 +231,26 @@ export default class TmChapter {
 
 /**
  * Cria um objeto de um capítulo a enviar para a Api da Tsuki Mangás (para chamadas POST).
- * @param scans Lista das scans que fizeram o capítulo.
- * @param imagesPaths Lista dos caminhos de todas as imagens do capítulo.
+ * @param pageId Id da página da obra na Tsuki Mangás.
+ * @param number Número do capítulo.
+ * @param scans Array das scans que fizeram o capítulo.
+ * @param imagesPaths Array dos caminhos de todas as imagens do capítulo.
+ * @param title Título do capítulo (se houver).
  * @returns Retorna um objeto que vai ser tratado e depois enviado à Api da Tsuki Mangás.
  * @since 0.1.4
  */
 function generatePayloadObject(
-	chapter: TmChapter,
+	pageId: number,
+	number: string,
 	scansIds: number[],
-	imagesPaths: string[]
+	imagesPaths: string[],
+	title?: string
 ): Record<string, string[] | string | number[] | number> {
 	return {
-		manga_id: chapter.ids?.page ?? '',
+		manga_id: pageId,
 
-		title: chapter.title ?? '',
-		number: chapter.number ?? '',
+		title: title ?? '',
+		number: number,
 
 		scans_array: scansIds.length ? scansIds : [],
 

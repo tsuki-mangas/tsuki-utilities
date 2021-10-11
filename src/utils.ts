@@ -243,14 +243,16 @@ export async function createMultipartPayload(
 				const propertyArray = object[property] as string[];
 				if (propertyArray.length === 0) continue;
 				else
-					propertyArray.forEach((value) => {
+					propertyArray.forEach((value, i) => {
 						dataArray.push(
 							`--${boundary}\r\nContent-Disposition: form-data; name="${property.replace(
 								'_array',
 								'[]'
 							)}"\r\n\r\n`
 						);
-						dataArray.push(value + '\r\n');
+						dataArray.push(
+							value + (propertyArray.length === i + 1 ? '' : '\r\n')
+						);
 					});
 			}
 		// ---------- \\
@@ -265,6 +267,7 @@ export async function createMultipartPayload(
 	}
 
 	dataArray.push(`--${boundary}--\r\n`);
+
 	return Buffer.concat(
 		dataArray.map((element) =>
 			element instanceof Buffer

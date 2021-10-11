@@ -10,6 +10,7 @@ export { default as TmUser } from './structures/tm/tm.user';
 export { default as ApiRequestError } from './structures/api.request.error';
 
 export * from './helpers/array';
+export * from './helpers/string';
 
 export * from './types/package.types';
 export * from './types/tm.types';

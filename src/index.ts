@@ -17,4 +17,5 @@ export * from './helpers/check';
 export * from './types/package.types';
 export * from './types/tm.types';
 export * from './types/md.types';
+export * from './types/al.types';
 export * from './types/mal.types';

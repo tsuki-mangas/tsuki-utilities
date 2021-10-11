@@ -12,6 +12,7 @@ export { default as ApiRequestError } from './structures/api.request.error';
 export * from './helpers/array';
 export * from './helpers/string';
 export * from './helpers/number';
+export * from './helpers/check';
 
 export * from './types/package.types';
 export * from './types/tm.types';

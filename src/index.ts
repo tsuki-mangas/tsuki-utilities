@@ -3,6 +3,8 @@ export { default as MdPage } from './structures/md/md.page';
 export { default as AlPage } from './structures/al/al.page';
 export { default as MalPage } from './structures/mal/mal.page';
 
+export { default as MalPageSearch } from './structures/mal/mal.page.search';
+
 export { default as TmChapter } from './structures/tm/tm.chapter';
 export { default as TmScan } from './structures/tm/tm.scan';
 export { default as TmUser } from './structures/tm/tm.user';

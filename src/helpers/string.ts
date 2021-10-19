@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 /**
  * Torna maiúscula a letra inicial de um texto.
  * @param input Input. String qualquer.
@@ -55,4 +57,16 @@ export function applyVariantsReplacement(input: string): string {
 		.join('..')
 		.split(/[‐‑⁃]/g)
 		.join('-');
+}
+
+/**
+ * Transforma um hostname ('tsukimangas.com') em link completo ('https://tsukimangas.com/).
+ * @param input Input. String qualquer.
+ * @returns Retorna um link.
+ * @since 0.1.9
+ */
+export function hostnameToUrl(input: string): string {
+	// Forçar só 1 'https' para não ter que thrownar (sim, acabei de inventar uma palavra) um erro.
+	const url = new URL(input.includes('https://') ? input : 'https://' + input);
+	return url.href;
 }

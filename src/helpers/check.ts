@@ -36,3 +36,25 @@ export function isNumber(
 	else if (allowSeparator) return /^-?\d+(,?-?\d+)*$/.test(input);
 	else return /^-?\d+(\d+)*$/.test(input);
 }
+
+/**
+ * Verifica se uma string é um link válido.
+ * @param input Input. String qualquer.
+ * @param allowNoHttps Permitir links sem 'https://' ?
+ * @returns Retorna um boolean.
+ * @since 0.1.9
+ */
+export function isUrl(input: string, allowNoHttps: boolean): boolean {
+	// Este RegEx não é meu. Não sei de quem é nem quando o obtive.
+	const pattern = new RegExp(
+		`^${allowNoHttps ? '(https?:\\/\\/)?' : '(https:\\/\\/)'}` + // protocol
+			'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+			'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+			'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+			'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+			'(\\#[-a-z\\d_]*)?$',
+		'i'
+	);
+
+	return pattern.test(input);
+}

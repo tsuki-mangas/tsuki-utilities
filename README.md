@@ -1,6 +1,6 @@
 # tsuki-utilities
 
-Pequeno package para ajudar os desenvolvedores da Tsuki Mangás (só 1 (eu)) a não repetir código.
+Pequeno package para ajudar os desenvolvedores da Tsuki Mangás (só 1 (rdx)) a não repetir código.
 
 ### Como usar?
 

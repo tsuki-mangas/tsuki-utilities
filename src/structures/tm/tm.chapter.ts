@@ -195,7 +195,7 @@ export default class TmChapter {
 			request = (await apiRequest(
 				'tm',
 				'chapter/versions/upload',
-				`upar o capítulo **${this.number}** da página **${this.ids?.page}**`,
+				`upar o capítulo **${number}** da página **${pageId}**`,
 				'POST',
 				payload
 			)) as UploadedChapterReceivedFromApi;

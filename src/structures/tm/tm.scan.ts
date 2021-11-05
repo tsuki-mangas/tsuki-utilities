@@ -131,7 +131,7 @@ export default class TmScan {
 			(await apiRequest(
 				'tm',
 				`scans/${slug}`,
-				`obter a scan ${slug}`
+				`obter a scan **${slug}**`
 			)) as ScanReceivedFromApi
 		);
 	}
@@ -146,7 +146,7 @@ export default class TmScan {
 		const request = (await apiRequest(
 				'tm',
 				`scans?name=${name}`,
-				`procurar a scan ${name}`
+				`procurar a scan **${name}**`
 			)) as SearchReceivedFromApi,
 			results: TmScan[] = [];
 

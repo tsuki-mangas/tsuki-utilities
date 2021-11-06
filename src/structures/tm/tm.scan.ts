@@ -65,17 +65,22 @@ export default class TmScan {
 	/**
 	 * Constructor da classe.
 	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (nome, sobre, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'traduzimos mangás desde janeiro' vira 'traduzimos mangás desde janeiro'
-	 *    - ' traduzimos só aquilo que lemos ' vira 'traduzimos só aquilo que lemos'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: ScanReceivedFromApi, beautify = true) {
-		if (!data) return this;
+	constructor(data?: ScanReceivedFromApi) {
+		if (data) this.#buildClass(data);
 
+		return this;
+	}
+
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param data Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(data: ScanReceivedFromApi): Required<TmScan> {
 		this.id = data.id;
 
 		this.links = {
@@ -83,28 +88,20 @@ export default class TmScan {
 			banner: data.cover
 				? `https://tsukimangas.com/scan/fundo/${data.cover}`
 				: null,
-			website: data.website || null,
-			discord: data.discord || null,
-			facebook: data.facebook || null
+			website: format(data.website) || null,
+			discord: format(data.discord) || null,
+			facebook: format(data.facebook) || null
 		};
 
-		this.name = data.name;
-		this.about = data.description || null;
+		this.name = format(data.name);
+		this.about = format(data.description) || null;
 
 		this.members = [];
 		if (data.members)
 			for (const member of data.members.values())
 				this.members.push(new TmUser(member.user));
 
-		if (beautify) {
-			if (this.links.website) format(this.links.website);
-			if (this.links.discord) format(this.links.discord);
-			if (this.links.facebook) format(this.links.facebook);
-			this.name = format(this.name);
-			if (this.about) this.about = format(this.about);
-		}
-
-		return this;
+		return this as Required<TmScan>;
 	}
 
 	/**
@@ -113,8 +110,8 @@ export default class TmScan {
 	 * @returns Retorna esta classe preenchida com as informações da scan.
 	 * @since 0.1.0
 	 */
-	async getById(id: number): Promise<TmScan> {
-		return new TmScan(
+	async getById(id: number): Promise<Required<TmScan>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'tm',
 				`scans/${id}`,
@@ -129,8 +126,8 @@ export default class TmScan {
 	 * @returns Retorna esta classe preenchida com as informações da scan.
 	 * @since 0.1.0
 	 */
-	async getBySlug(slug: string): Promise<TmScan> {
-		return new TmScan(
+	async getBySlug(slug: string): Promise<Required<TmScan>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'tm',
 				`scans/${slug}`,
@@ -145,16 +142,16 @@ export default class TmScan {
 	 * @returns Retorna uma array de classes.
 	 * @since 0.1.6
 	 */
-	async search(name: string): Promise<TmScan[]> {
+	async search(name: string): Promise<Array<Required<TmScan>>> {
 		const request = (await apiRequest(
 				'tm',
 				`scans?name=${name}`,
 				`procurar a scan **${name}**`
 			)) as SearchReceivedFromApi,
-			results: TmScan[] = [];
+			results: Array<Required<TmScan>> = [];
 
 		for (const result of request.data.values())
-			results.push(new TmScan(result));
+			results.push(this.#buildClass(result));
 
 		return results;
 	}
@@ -166,7 +163,7 @@ export default class TmScan {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	async create(name: string, url?: string): Promise<TmScan> {
+	async create(name: string, url?: string): Promise<Required<TmScan>> {
 		if (url && !isUrl(url, false)) throw new Error('O url não é válido.');
 
 		const payload = { name, website: url ?? '' },
@@ -178,7 +175,7 @@ export default class TmScan {
 				payload
 			)) as ScanReceivedFromApi;
 
-		return new TmScan(request);
+		return this.#buildClass(request);
 	}
 
 	/**
@@ -186,7 +183,7 @@ export default class TmScan {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	async delete(): Promise<TmScan> {
+	async delete(): Promise<Required<TmScan>> {
 		if (!this.id || !this.name)
 			throw new Error(
 				"A classe tem que ser preenchida primeiro. Use o método 'getById', 'getBySlug' ou 'search' para isso."
@@ -199,7 +196,7 @@ export default class TmScan {
 			'DELETE'
 		);
 
-		return this;
+		return this as Required<TmScan>;
 	}
 }
 

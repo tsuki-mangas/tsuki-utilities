@@ -43,7 +43,7 @@ export default class TmChapter {
 	 * Usuário que upou o capítulo. Este campo é null quando se obtem a lista completa ('getAll'). Só com 'getPartial' é que se consegue o usuário.
 	 * @since 0.1.3
 	 */
-	uploader?: TmUser | null;
+	uploader?: Required<TmUser> | null;
 
 	/**
 	 * Versões do capítulo.
@@ -64,7 +64,7 @@ export default class TmChapter {
 		 * Array de scans que fizeram a versão.
 		 * @since 0.1.3
 		 */
-		scans: TmScan[];
+		scans: Array<Required<TmScan>>;
 		/**
 		 * Data de upload da versão.
 		 * @since 0.1.3
@@ -80,28 +80,31 @@ export default class TmChapter {
 
 	/**
 	 * Constructor da classe.
-	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'One Piece' vira 'One Piece'
-	 *    - ' One Piece ' vira 'One Piece'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
-	 * @since 0.1.3
+	 * @since 0.1.0
 	 */
-	constructor(data?: DataType, beautify = true) {
-		if (!data) return this;
+	constructor() {
+		return this;
+	}
 
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param data Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(data: DataType): Required<TmChapter> {
 		this.ids = {
 			page: data.manga_id,
 			chapter: data.id,
 			uploader: data.user_id
 		};
 
-		this.title = data.title || null;
+		this.title = format(data.title) || null;
 		this.number = data.number;
 
-		if (data.author) this.uploader = new TmUser(data.author);
+		if (data.author)
+			this.uploader = new TmUser(data.author) as Required<TmUser>;
 		else this.uploader = null;
 
 		this.versions = [];
@@ -109,13 +112,15 @@ export default class TmChapter {
 			this.versions.push({
 				id: version.id,
 				pages: version.total_pages,
-				scans: version.scans.map((scanObject) => new TmScan(scanObject.scan)),
+				scans: version.scans.map(
+					(scanObject) => new TmScan(scanObject.scan) as Required<TmScan>
+				),
 				createdAt: new Date(version.created_at.replace(/-/g, '/'))
 			});
 
 		this.views = data.views;
 
-		if (beautify) if (this.title) this.title = format(this.title);
+		return this as Required<TmChapter>;
 	}
 
 	/**
@@ -124,15 +129,16 @@ export default class TmChapter {
 	 * @returns Retorna uma array de classes.
 	 * @since 0.1.3
 	 */
-	async getAll(pageId: number): Promise<TmChapter[]> {
+	async getAll(pageId: number): Promise<Array<Required<TmChapter>>> {
 		const request = (await apiRequest(
 				'tm',
 				`chapters/${pageId}/all`,
 				`obter a lista de todos os capítulos da páginda com Id **${pageId}**`
 			)) as AllListReceivedFromApi,
-			results: TmChapter[] = [];
+			results: Array<Required<TmChapter>> = [];
 
-		for (const result of request.values()) results.push(new TmChapter(result));
+		for (const result of request.values())
+			results.push(this.#buildClass(result));
 
 		return results;
 	}
@@ -147,7 +153,7 @@ export default class TmChapter {
 	async getPartial(
 		pageId: number,
 		filter?: { order?: 'asc' | 'desc'; page?: number }
-	): Promise<TmChapter[]> {
+	): Promise<Array<Required<TmChapter>>> {
 		if (!filter || (!filter.order && filter.page === undefined))
 			filter = { order: 'asc', page: 1 };
 		if (!filter.order && filter.page !== undefined)
@@ -159,10 +165,10 @@ export default class TmChapter {
 				`chapters?manga_id=${pageId}&order=${filter.order}&page=${filter.page}`,
 				`obter a lista parcial de capítulos da páginda com Id **${pageId}**`
 			)) as PartialListReceivedFromApi,
-			results: TmChapter[] = [];
+			results: Array<Required<TmChapter>> = [];
 
 		for (const result of request.data.values())
-			results.push(new TmChapter(result));
+			results.push(this.#buildClass(result));
 
 		return results;
 	}
@@ -183,7 +189,7 @@ export default class TmChapter {
 		scans: number[],
 		imagesPaths: string[],
 		title?: string
-	): Promise<TmChapter> {
+	): Promise<Required<TmChapter>> {
 		const payloadObject = generatePayloadObject(
 				pageId,
 				number,
@@ -218,14 +224,16 @@ export default class TmChapter {
 			{
 				id: request.id,
 				pages: request.total_pages,
-				scans: request.scans.map((scanObject) => new TmScan(scanObject.scan)),
+				scans: request.scans.map(
+					(scanObject) => new TmScan(scanObject.scan) as Required<TmScan>
+				),
 				createdAt: new Date(request.created_at.replace(/-/g, '/'))
 			}
 		];
 
 		this.views = 0;
 
-		return this;
+		return this as Required<TmChapter>;
 	}
 
 	/**
@@ -235,7 +243,10 @@ export default class TmChapter {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	async editChapter(title?: string, number?: string): Promise<TmChapter> {
+	async editChapter(
+		title?: string,
+		number?: string
+	): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.ids.page || !this.number)
 			throw new Error(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
@@ -262,7 +273,7 @@ export default class TmChapter {
 			payload
 		);
 
-		return this;
+		return this as Required<TmChapter>;
 	}
 
 	/**
@@ -274,8 +285,8 @@ export default class TmChapter {
 	 */
 	async editVersion(
 		versionIndex: number,
-		newScans: TmScan[]
-	): Promise<TmChapter> {
+		newScans: Array<Required<TmScan>>
+	): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.versions)
 			throw new Error(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
@@ -297,7 +308,7 @@ export default class TmChapter {
 			payloadObject
 		);
 
-		return this;
+		return this as Required<TmChapter>;
 	}
 
 	/**
@@ -306,7 +317,7 @@ export default class TmChapter {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	async delete(versionIndex?: number): Promise<TmChapter> {
+	async delete(versionIndex?: number): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.versions)
 			throw new Error(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
@@ -327,7 +338,7 @@ export default class TmChapter {
 			'DELETE'
 		);
 
-		return this;
+		return this as Required<TmChapter>;
 	}
 }
 

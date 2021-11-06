@@ -1,11 +1,3 @@
-import {
-	TmFormats,
-	TmFormatsLabelType,
-	TmFormatsIdType,
-	TmDemographics,
-	TmDemographicsLabelType,
-	TmDemographicsIdType
-} from '../../types/tm.types';
 import { apiRequest, format, formatArray } from '../../utils';
 import {
 	AlFormats,
@@ -23,6 +15,14 @@ import {
 	AlTagsTypeEn,
 	AlTagsTypePt
 } from '../../types/al.types';
+import {
+	TmFormats,
+	TmFormatsLabelType,
+	TmFormatsIdType,
+	TmDemographics,
+	TmDemographicsLabelType,
+	TmDemographicsIdType
+} from '../../types/tm.types';
 
 /**
  * Classe de interação com obras do AniList.
@@ -197,15 +197,20 @@ export default class AlPage {
 
 	/**
 	 * Constructor da classe.
-	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.3
 	 */
-	constructor(received?: ReceivedFromApi, beautify = true) {
-		if (!received) return this;
+	constructor() {
+		return this;
+	}
 
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param received Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(received: ReceivedFromApi): Required<AlPage> {
 		const data = received.data.Media;
 
 		this.ids = {
@@ -232,10 +237,10 @@ export default class AlPage {
 		};
 
 		this.titles = {
-			principal: data.title.english || data.title.romaji,
-			english: data.title.english || null,
-			native: data.title.native || null,
-			alternatives: data.synonyms
+			principal: format(data.title.english) || format(data.title.romaji),
+			english: format(data.title.english) || null,
+			native: format(data.title.native) || null,
+			alternatives: formatArray(data.synonyms, true, false)
 		};
 
 		this.authors = [];
@@ -248,6 +253,9 @@ export default class AlPage {
 					this.artists.push(staff.node.name.full);
 			}
 
+		this.authors = formatArray(this.authors, true, false);
+		this.artists = formatArray(this.artists, true, false);
+
 		this.language =
 			data.countryOfOrigin === 'JP' ||
 			data.countryOfOrigin === 'KR' ||
@@ -256,7 +264,7 @@ export default class AlPage {
 				: null;
 		this.adult = data.isAdult;
 		this.status = AlStatuses[data.status] || null;
-		this.synopsis = data.description || null;
+		this.synopsis = format(data.description) || null;
 
 		this.genres = [];
 		this.tags = [];
@@ -295,43 +303,27 @@ export default class AlPage {
 			popularity: data.popularity
 		};
 
-		if (beautify) {
-			this.titles.principal = format(this.titles.principal);
-			if (this.titles.english)
-				this.titles.english = format(this.titles.english);
-			if (this.titles.native) this.titles.native = format(this.titles.native);
-			this.titles.alternatives = formatArray(
-				this.titles.alternatives,
-				true,
-				false
-			);
-			this.authors = formatArray(this.authors);
-			this.artists = formatArray(this.artists);
-			if (this.synopsis) this.synopsis = format(this.synopsis);
-		}
+		return this as Required<AlPage>;
 	}
-
 	/**
 	 * Obter uma obra da AniList.
 	 * @param id Id da obra.
-	 * @param beautify Embelezar os dados?
 	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.3
 	 */
-	async get(id: number, beautify = true): Promise<AlPage> {
+	async get(id: number): Promise<Required<AlPage>> {
 		const query =
 				'query ($id: Int) { Media(id: $id, type: MANGA) { id idMal title { romaji english native } synonyms trailer { id site } coverImage { extraLarge large medium } bannerImage staff { edges { node { name { first middle last full native } } role } } format countryOfOrigin isAdult status description genres tags { id name } chapters volumes meanScore popularity } }',
 			variables = {
 				id
 			};
 
-		return new AlPage(
+		return this.#buildClass(
 			(await apiRequest('al', '', `obra ${id}`, 'POST', {
 				query,
 				variables
-			})) as ReceivedFromApi,
-			beautify
+			})) as ReceivedFromApi
 		);
 	}
 }

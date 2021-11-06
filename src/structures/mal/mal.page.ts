@@ -166,18 +166,20 @@ export default class MalPage {
 
 	/**
 	 * Constructor da classe.
-	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'One Piece' vira 'One Piece'
-	 *    - ' One Piece ' vira 'One Piece'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: ReceivedFromApi, beautify = true) {
-		if (!data) return this;
+	constructor() {
+		return this;
+	}
 
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param data Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(data: ReceivedFromApi): Required<MalPage> {
 		this.id = data.mal_id;
 
 		this.links = {
@@ -186,11 +188,15 @@ export default class MalPage {
 		};
 
 		this.titles = {
-			principal: data.title,
-			english: data.title_english || null,
-			native: data.title_japanese || null,
+			principal: format(data.title),
+			english: format(data.title_english) || null,
+			native: format(data.title_japanese) || null,
 			alternatives: data.title_synonyms.length
-				? data.title_synonyms.map((title) => title)
+				? formatArray(
+						data.title_synonyms.map((title) => title),
+						true,
+						false
+				  )
 				: []
 		};
 
@@ -201,13 +207,15 @@ export default class MalPage {
 				: staffMember
 		);
 
+		this.staff = formatArray(this.staff, true, false);
+
 		this.format = {
 			tmId: TmFormats[MalFormats[data.type]],
 			label: MalFormats[data.type]
 		};
 
 		this.status = MalStatuses[data.status] || null;
-		this.synopsis = data.synopsis || null;
+		this.synopsis = format(data.synopsis) || null;
 
 		this.genres = [];
 		for (const genre of data.genres.values())
@@ -224,6 +232,8 @@ export default class MalPage {
 
 		if (!this.demographic) this.demographic = null;
 		this.adult = this.genres.includes('Hentai');
+
+		this.genres = formatArray(this.genres);
 
 		switch (data.type) {
 			case 'One-shot':
@@ -244,22 +254,7 @@ export default class MalPage {
 		this.volumes = data.volumes;
 		this.chapters = data.chapters;
 
-		if (beautify) {
-			this.titles.principal = format(this.titles.principal);
-			if (this.titles.english)
-				this.titles.english = format(this.titles.english);
-			if (this.titles.native) this.titles.native = format(this.titles.native);
-			this.titles.alternatives = formatArray(
-				this.titles.alternatives,
-				true,
-				false
-			);
-			this.staff = formatArray(this.staff);
-			if (this.synopsis) this.synopsis = format(this.synopsis);
-			this.genres = formatArray(this.genres, false, true) as MalPage['genres'];
-		}
-
-		return this;
+		return this as Required<MalPage>;
 	}
 
 	/**
@@ -268,8 +263,8 @@ export default class MalPage {
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.0
 	 */
-	async get(id: number): Promise<MalPage> {
-		return new MalPage(
+	async get(id: number): Promise<Required<MalPage>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'mal',
 				`manga/${id}`,

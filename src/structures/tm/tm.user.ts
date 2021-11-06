@@ -131,17 +131,22 @@ export default class TmUser {
 	/**
 	 * Constructor da classe.
 	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (nome, sobre mim, cidade, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'tenho 23 anos' vira 'tenho 23 anos'
-	 *    - ' gosto de feijão ' vira 'gosto de feijão'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: ReceivedFromApi, beautify = true) {
-		if (!data) return this;
+	constructor(data?: ReceivedFromApi) {
+		if (data) this.#buildClass(data);
 
+		return this;
+	}
+
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param data Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(data: ReceivedFromApi): Required<TmUser> {
 		this.id = data.id;
 		this.username = data.username;
 
@@ -155,9 +160,9 @@ export default class TmUser {
 		this.permission = data.permission;
 		this.banned = data.banned ? true : false;
 
-		this.name = data.name || null;
-		this.about = data.about || null;
-		this.city = data.city || null;
+		this.name = format(data.name) || null;
+		this.about = format(data.about) || null;
+		this.city = format(data.city) || null;
 		this.birthday = data.birthday
 			? new Date(data.birthday.replace(/-/g, '/'))
 			: null;
@@ -179,13 +184,7 @@ export default class TmUser {
 		this.level = data.level;
 		this.points = data.points;
 
-		if (beautify) {
-			if (this.name) this.name = format(this.name);
-			if (this.about) this.about = format(this.about);
-			if (this.city) this.city = format(this.city);
-		}
-
-		return this;
+		return this as Required<TmUser>;
 	}
 
 	/**

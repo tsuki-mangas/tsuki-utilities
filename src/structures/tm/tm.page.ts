@@ -208,18 +208,20 @@ export default class TmPage {
 
 	/**
 	 * Constructor da classe.
-	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'One Piece' vira 'One Piece'
-	 *    - ' One Piece ' vira 'One Piece'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(data?: PageReceivedFromApi, beautify = true) {
-		if (!data) return this;
+	constructor() {
+		return this;
+	}
 
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param data Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(data: PageReceivedFromApi): Required<TmPage> {
 		this.ids = {
 			tm: data.id,
 			md: data.dex_id,
@@ -229,7 +231,7 @@ export default class TmPage {
 
 		this.links = {
 			trailer: data.trailer?.length
-				? `https://www.youtube.com/watch?v=${data.trailer}`
+				? format(`https://www.youtube.com/watch?v=${data.trailer}`)
 				: null,
 			slug: data.url,
 			overview: `https://tsukimangas.com/obra/${data.id}/${data.url}`,
@@ -241,14 +243,22 @@ export default class TmPage {
 		};
 
 		this.titles = {
-			principal: data.title,
+			principal: format(data.title),
 			alternatives: data.titles?.length
-				? data.titles?.map((title) => title.title)
+				? formatArray(
+						data.titles?.map((title) => title.title),
+						true,
+						false
+				  )
 				: []
 		};
 
-		this.authors = data.author?.length ? data.author.split(', ') : [];
-		this.artists = data.artist?.length ? data.artist.split(', ') : [];
+		this.authors = data.author?.length
+			? formatArray(data.author.split(', '), true, false)
+			: [];
+		this.artists = data.artist?.length
+			? formatArray(data.artist.split(', '), true, false)
+			: [];
 
 		if (data.format >= 1 && data.format <= 4)
 			this.format = {
@@ -266,12 +276,12 @@ export default class TmPage {
 
 		this.adult = data.adult_content ? true : false;
 		this.status = data.status;
-		this.synopsis = data.synopsis?.length ? data.synopsis : null;
+		this.synopsis = data.synopsis?.length ? format(data.synopsis) : null;
 
 		this.genres = [];
 		if (data.genres)
 			for (const genre of data.genres.values())
-				if (inputIsGenre(genre.genre)) this.genres.push(genre.genre);
+				if (inputIsGenre(genre.genre)) this.genres.push(format(genre.genre));
 
 		this.chapters = {
 			total: data.chapters_count,
@@ -291,21 +301,7 @@ export default class TmPage {
 			thisMonth: data.views_month
 		};
 
-		if (beautify) {
-			if (this.links.trailer) this.links.trailer = format(this.links.trailer);
-			this.titles.principal = format(this.titles.principal);
-			this.titles.alternatives = formatArray(
-				this.titles.alternatives,
-				true,
-				false
-			);
-			this.authors = formatArray(this.authors, true, false);
-			this.artists = formatArray(this.artists, true, false);
-			this.genres = formatArray(this.genres) as TmGenresType[];
-			if (this.synopsis) this.synopsis = format(this.synopsis);
-		}
-
-		return this;
+		return this as Required<TmPage>;
 	}
 
 	/**
@@ -314,8 +310,8 @@ export default class TmPage {
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.0
 	 */
-	async get(id: number): Promise<TmPage> {
-		return new TmPage(
+	async get(id: number): Promise<Required<TmPage>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'tm',
 				`mangas/${id}`,
@@ -330,16 +326,16 @@ export default class TmPage {
 	 * @returns Retorna uma array de classes.
 	 * @since 0.1.3
 	 */
-	async search(query: string): Promise<TmPage[]> {
+	async search(query: string): Promise<Array<Required<TmPage>>> {
 		const request = (await apiRequest(
 				'tm',
 				`mangas?title=${query}`,
 				`procurar **${query}**`
 			)) as SearchReceivedFromApi,
-			results: TmPage[] = [];
+			results: Array<Required<TmPage>> = [];
 
 		for (const result of request.data.values())
-			results.push(new TmPage(result));
+			results.push(this.#buildClass(result));
 
 		return results;
 	}
@@ -351,7 +347,10 @@ export default class TmPage {
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.3
 	 */
-	async create(coverPath: string, bannerPath?: string): Promise<TmPage> {
+	async create(
+		coverPath: string,
+		bannerPath?: string
+	): Promise<Required<TmPage>> {
 		const payloadObject = generatePayloadObject(this, coverPath, bannerPath),
 			payload = createFormData(payloadObject),
 			request = (await apiRequest(
@@ -362,10 +361,13 @@ export default class TmPage {
 				payload
 			)) as PageReceivedFromApi;
 
-		return new TmPage(request);
+		return this.#buildClass(request);
 	}
 
-	async edit(coverPath?: string, bannerPath?: string): Promise<TmPage> {
+	async edit(
+		coverPath?: string,
+		bannerPath?: string
+	): Promise<Required<TmPage>> {
 		if (!this.ids?.tm)
 			throw new Error(
 				"Você tem que usar o método 'get' para preencher este objeto ou então preenchê-lo manualmente."
@@ -381,7 +383,7 @@ export default class TmPage {
 				payload
 			)) as PageReceivedFromApi;
 
-		return new TmPage(request);
+		return this.#buildClass(request);
 	}
 
 	/**
@@ -390,7 +392,7 @@ export default class TmPage {
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.3
 	 */
-	async delete(id?: number): Promise<TmPage> {
+	async delete(id?: number): Promise<Required<TmPage>> {
 		if (!id && !this.ids?.tm)
 			throw new Error('Preciso de um Id antes de deletar uma página.');
 
@@ -401,7 +403,7 @@ export default class TmPage {
 			'DELETE'
 		);
 
-		return this;
+		return this as Required<TmPage>;
 	}
 }
 

@@ -165,18 +165,20 @@ export default class MdPage {
 
 	/**
 	 * Constructor da classe.
-	 * @param data Dados recebidos (objeto) ao chamar a API.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'One Piece' vira 'One Piece'
-	 *    - ' One Piece ' vira 'One Piece'
-	 * @returns Se data for definido, retorna a classe preenchida. Se não, retorna a classe vazia.
 	 * @since 0.1.0
 	 */
-	constructor(received?: PageReceivedFromApi, beautify = true) {
-		if (!received) return this;
+	constructor() {
+		return this;
+	}
 
+	/**
+	 * Preenche a classe.
+	 * @private
+	 * @param received Dados recebidos (objeto) ao chamar a API.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	#buildClass(received: PageReceivedFromApi): Required<MdPage> {
 		const { data } = received;
 
 		this.ids = {
@@ -213,17 +215,21 @@ export default class MdPage {
 
 		this.titles = {
 			principal: data.attributes.title['en']
-				? data.attributes.title['en']
-				: data.attributes.title[data.attributes.originalLanguage],
-			english: data.attributes.title['en'] ? data.attributes.title['en'] : null,
-			native: data.attributes.title[data.attributes.originalLanguage]
-				? data.attributes.title[data.attributes.originalLanguage]
+				? format(data.attributes.title['en'])
+				: format(data.attributes.title[data.attributes.originalLanguage]),
+			english: data.attributes.title['en']
+				? format(data.attributes.title['en'])
 				: null,
-			alternatives: alternativeTitles
+			native: data.attributes.title[data.attributes.originalLanguage]
+				? format(data.attributes.title[data.attributes.originalLanguage])
+				: null,
+			alternatives: formatArray(alternativeTitles, true, false)
 		};
 
-		if (this.titles.principal === this.titles.english)
-			this.titles.english.toLowerCase();
+		if (
+			this.titles.principal.toLowerCase() === this.titles.english?.toLowerCase()
+		)
+			this.titles.english = null;
 
 		this.authors = [];
 		this.artists = [];
@@ -241,6 +247,9 @@ export default class MdPage {
 			const artistName = (artist.attributes as { name: string })?.name;
 			if (artistName?.length) this.artists.push(artistName);
 		}
+
+		this.authors = formatArray(this.authors, true, false);
+		this.artists = formatArray(this.artists, true, false);
 
 		const originalLanguage = data.attributes.originalLanguage;
 		if (originalLanguage === 'ko')
@@ -263,8 +272,8 @@ export default class MdPage {
 		);
 		this.status = MdStatuses[data.attributes.status] || null;
 		this.synopsis =
-			data.attributes.description['pt-br'] ||
-			data.attributes.description['en'] ||
+			format(data.attributes.description['pt-br']) ||
+			format(data.attributes.description['en']) ||
 			null;
 
 		this.genres = [];
@@ -285,22 +294,7 @@ export default class MdPage {
 		this.lastVolume = data.attributes.lastVolume;
 		this.lastChapter = data.attributes.lastChapter;
 
-		if (beautify) {
-			this.titles.principal = format(this.titles.principal);
-			if (this.titles.english)
-				this.titles.english = format(this.titles.english);
-			if (this.titles.native) this.titles.native = format(this.titles.native);
-			this.titles.alternatives = formatArray(
-				this.titles.alternatives,
-				true,
-				false
-			);
-			this.authors = formatArray(this.authors, true, false);
-			this.artists = formatArray(this.artists, true, false);
-			if (this.synopsis) this.synopsis = format(this.synopsis);
-		}
-
-		return this;
+		return this as Required<MdPage>;
 	}
 
 	/**
@@ -309,8 +303,8 @@ export default class MdPage {
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.0
 	 */
-	async get(uuid: string): Promise<MdPage> {
-		return new MdPage(
+	async get(uuid: string): Promise<Required<MdPage>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'md',
 				`manga/${uuid}?includes[]=author&includes[]=artist&includes[]=cover_art`,
@@ -324,16 +318,16 @@ export default class MdPage {
 	 * @param query Input. Texto a procurar.
 	 * @returns Array de classes.
 	 */
-	async search(query: string): Promise<MdPage[]> {
+	async search(query: string): Promise<Array<Required<MdPage>>> {
 		const request = (await apiRequest(
 				'md',
 				`manga?title=${query}&includes[]=author&includes[]=artist&includes[]=cover_art`,
 				`procurar **${query}**`
 			)) as SearchReceivedFromApi,
-			results: MdPage[] = [];
+			results: Array<Required<MdPage>> = [];
 
 		for (const result of request.results.values())
-			results.push(new MdPage(result));
+			results.push(this.#buildClass(result));
 
 		return results;
 	}

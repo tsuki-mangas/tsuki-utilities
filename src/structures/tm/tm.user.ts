@@ -160,9 +160,9 @@ export default class TmUser {
 		this.permission = data.permission;
 		this.banned = data.banned ? true : false;
 
-		this.name = format(data.name) || null;
-		this.about = format(data.about) || null;
-		this.city = format(data.city) || null;
+		this.name = data.name ? format(data.name) : null;
+		this.about = data.about ? format(data.about) : null;
+		this.city = data.city ? format(data.city) : null;
 		this.birthday = data.birthday
 			? new Date(data.birthday.replace(/-/g, '/'))
 			: null;
@@ -193,8 +193,8 @@ export default class TmUser {
 	 * @returns Retorna esta classe preenchida com as informações do usuário.
 	 * @since 0.1.0
 	 */
-	async getByUsername(username: string): Promise<TmUser> {
-		return new TmUser(
+	async getByUsername(username: string): Promise<Required<TmUser>> {
+		return this.#buildClass(
 			(await apiRequest(
 				'tm',
 				`users/${username}`,

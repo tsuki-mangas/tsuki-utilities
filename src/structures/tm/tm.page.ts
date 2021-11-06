@@ -181,7 +181,7 @@ export default class TmPage {
 		 * Média dos votos da obra.
 		 * @since 0.1.0
 		 */
-		average: number;
+		average: number | null;
 	};
 
 	/**
@@ -267,7 +267,7 @@ export default class TmPage {
 			};
 		else this.format = null;
 
-		if (data.demography >= 1 && data.demography <= 4)
+		if (data.demography && data.demography >= 1 && data.demography <= 4)
 			this.demographic = {
 				id: data.demography as TmDemographicsIdType,
 				label: TmDemographics[data.demography] as TmDemographicsLabelType
@@ -474,25 +474,27 @@ export type PageReceivedFromApi = {
 	url: string;
 	title: string;
 	status: TmStatuses;
-	author: string;
-	artist: string;
+	author: string | null;
+	artist: string | null;
 	synopsis: string;
 	poster: string;
 	cover: string;
 	format: number;
-	demography: number;
+	demography: number | null;
 	adult_content: number;
-	trailer: string;
-	dex_id: number;
-	anilist_id: number;
-	mal_id: number;
-	rating: number;
+	trailer: string | null;
+	dex_id: number | null;
+	anilist_id: number | null;
+	mal_id: number | null;
+	rating: number | null;
 	total_rating: number;
 	chapters_count: number;
 	views: number;
 	views_day: number;
 	views_month: number;
 	last_published_at: string;
+	created_at: string;
+	updated_at: string;
 	titles?: Array<{
 		title: string;
 	}>;

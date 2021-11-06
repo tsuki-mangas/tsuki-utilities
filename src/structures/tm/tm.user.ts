@@ -232,6 +232,31 @@ export default class TmUser {
 		return this as Required<TmUser>;
 	}
 
+	/**
+	 * Bane ou desbane um usuário na Tsuki Mangás.
+	 * @param unban Desbanir o usuário?
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async ban(unban = false): Promise<Required<TmUser>> {
+		if (!this.username || this.banned === undefined) throw new Error('foa');
+		else if (!unban && this.banned)
+			throw new Error('O usuário já está banido.');
+		else if (unban && this.banned === false)
+			throw new Error('O usuário não está banido.');
+
+		await apiRequest(
+			'tm',
+			`users/banned/${this.username}`,
+			`${unban ? 'desbanir' : 'banir'} o usuário **${this.username}**`,
+			'POST',
+			{ user: this.username }
+		);
+
+		this.banned = !unban;
+
+		return this as Required<TmUser>;
+	}
 }
 
 /**

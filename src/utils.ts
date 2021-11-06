@@ -325,7 +325,11 @@ export async function apiRequest(
 
 					if (response.statusCode && response.statusCode < 300) {
 						const parsedResponseObject =
-							method === 'DELETE' ? {} : JSON.parse(responsePayload);
+							method === 'DELETE'
+								? {}
+								: endpoint.includes('banned')
+								? { message: responsePayload }
+								: JSON.parse(responsePayload);
 						resolve(parsedResponseObject);
 					} else
 						reject(

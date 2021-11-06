@@ -181,6 +181,26 @@ export default class TmScan {
 		return new TmScan(request);
 	}
 
+	/**
+	 * Apagar uma scan da Tsuki Mangás.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async delete(): Promise<TmScan> {
+		if (!this.id || !this.name)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getById', 'getBySlug' ou 'search' para isso."
+			);
+
+		await apiRequest(
+			'tm',
+			`scans/${this.id}`,
+			`apagar a scan **${this.name}**`,
+			'DELETE'
+		);
+
+		return this;
+	}
 }
 
 /**

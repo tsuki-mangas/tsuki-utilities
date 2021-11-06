@@ -257,7 +257,7 @@ export async function apiRequest(
 	website: AvailableWebsitesShort,
 	endpoint: string,
 	action: string,
-	method = 'GET' as 'GET' | 'POST' | 'DELETE',
+	method = 'GET' as 'GET' | 'POST' | 'PUT' | 'DELETE',
 	requestPayload = {} as Record<string, unknown> | FormData,
 	additionalHeaders = {} as Record<string, string>
 ): Promise<unknown> {
@@ -315,7 +315,8 @@ export async function apiRequest(
 					activeRequests--;
 
 					if (response.statusCode && response.statusCode < 300) {
-						const parsedResponseObject = JSON.parse(responsePayload);
+						const parsedResponseObject =
+							method === 'DELETE' ? {} : JSON.parse(responsePayload);
 						resolve(parsedResponseObject);
 					} else
 						reject(

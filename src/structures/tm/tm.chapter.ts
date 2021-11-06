@@ -300,6 +300,33 @@ export default class TmChapter {
 		return this;
 	}
 
+	/**
+	 * Apaga um capítulo ou uma versão de um capítulo da Tsuki Mangás.
+	 * @param versionIndex Posição da versão na array de versões.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async delete(versionIndex?: number): Promise<TmChapter> {
+		if (!this.ids || !this.versions)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
+			);
+		else if (versionIndex && !this.versions[versionIndex])
+			throw new Error('Parece que essa versão não existe.');
+
+		await apiRequest(
+			'tm',
+			versionIndex !== undefined
+				? `chapter/versions/${this.versions[versionIndex].id}`
+				: `chapters/${this.ids.chapter}`,
+			`apagar ${
+				versionIndex !== undefined
+					? `a versão **${this.versions[versionIndex].id}** do`
+					: 'o'
+			} capítulo **${this.ids.chapter}** da página **${this.ids.page}**`,
+			'DELETE'
+		);
+
 		return this;
 	}
 }

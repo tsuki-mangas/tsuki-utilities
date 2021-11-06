@@ -227,6 +227,45 @@ export default class TmChapter {
 
 		return this;
 	}
+
+	/**
+	 * Editar um capítulo (completo) da Tsuki Mangás.
+	 * @param title Título do capítulo.
+	 * @param number Número do capítulo.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async editChapter(title?: string, number?: string): Promise<TmChapter> {
+		if (!this.ids || !this.ids.page || !this.number)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
+			);
+		else if (!title && !number)
+			throw new Error(
+				'Você tem que definir ou o título ou o número do capítulo.'
+			);
+
+		if (title) this.title = title;
+		if (number) this.number = number;
+
+		const payload = createFormData({
+			manga_id: this.ids.page,
+			title: this.title ?? '',
+			number: this.number
+		});
+
+		await apiRequest(
+			'tm',
+			`chapters/${this.ids.chapter}`,
+			`atualizar o capítulo **${this.ids.chapter}** da página **${this.ids.page}**`,
+			'PUT',
+			payload
+		);
+
+		return this;
+	}
+		return this;
+	}
 }
 
 /**

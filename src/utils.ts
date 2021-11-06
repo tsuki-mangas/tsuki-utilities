@@ -34,8 +34,8 @@ export function capitalize(input: string): string {
  * @returns Retorna a string sempre espaços duplos ou mais.
  * @since 0.1.0
  */
-export function format(input: string): string {
-	return input.replace(/  +/g, ' ').trim();
+export function format<T>(input: T): T {
+	return String(input).replace(/  +/g, ' ').trim() as unknown as T;
 }
 
 /**
@@ -47,22 +47,31 @@ export function format(input: string): string {
  * @returns Retorna a string array limpa, sem elementos inválidos.
  * @since 0.1.0
  */
-export function formatArray(
-	input: string[],
+export function formatArray<T>(
+	input: T[],
 	formatElements = true,
 	sort = true
-): string[] {
-	const tempArray: string[] = [];
+): T[] {
+	const tempArray: T[] = [],
+		stringArray = input.length && typeof input[0] === 'string';
 
 	for (const str of new Set(input).values()) tempArray.push(str);
 	input = [];
-	for (const str of new Map(
-		tempArray.map((s) => [s.toLowerCase(), s])
-	).values())
-		input.push(str);
 
-	if (formatElements) input.map((element) => format(element));
-	if (sort) tempArray.sort(Intl.Collator().compare);
+	if (stringArray)
+		for (const str of new Map(
+			tempArray.map((s) => [String(s).toLowerCase(), s])
+		).values())
+			input.push(str);
+
+	if (stringArray && formatElements) input.map((element) => format(element));
+
+	if (sort)
+		if (stringArray)
+			tempArray.sort(
+				Intl.Collator().compare as unknown as (a: T, b: T) => number
+			);
+		else tempArray.sort();
 
 	return tempArray;
 }

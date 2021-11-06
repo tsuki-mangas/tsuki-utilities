@@ -1,7 +1,16 @@
-export { default as TmPage } from './structures/tm/tm.page';
-export { default as TmUser } from './structures/tm/tm.user';
+export {
+	default as TmPage,
+	PageReceivedFromApi
+} from './structures/tm/tm.page';
+export {
+	default as TmUser,
+	ReceivedFromApi as UserReceivedFromApi
+} from './structures/tm/tm.user';
 export { default as TmChapter } from './structures/tm/tm.chapter';
-export { default as TmScan } from './structures/tm/tm.scan';
+export {
+	default as TmScan,
+	ScanReceivedFromApi
+} from './structures/tm/tm.scan';
 
 export { default as MdPage } from './structures/md/md.page';
 export { default as AlPage } from './structures/al/al.page';

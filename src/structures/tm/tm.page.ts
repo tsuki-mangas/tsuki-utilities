@@ -208,9 +208,12 @@ export default class TmPage {
 
 	/**
 	 * Constructor da classe.
+	 * @param data Dados recebidos (objeto) ao chamar a API.
 	 * @since 0.1.0
 	 */
-	constructor() {
+	constructor(data?: PageReceivedFromApi) {
+		if (data) this.#buildClass(data);
+
 		return this;
 	}
 

@@ -1,5 +1,6 @@
 import TmUser, { ReceivedFromApi as UserReceivedFromApi } from './tm.user';
 import { format, apiRequest } from '../../utils';
+import { isUrl } from '../..';
 
 /**
  * Classe de interação com uma scan da Tsuki Mangás.
@@ -26,7 +27,7 @@ export default class TmScan {
 		 * Link do banner da scan.
 		 * @since 0.1.0
 		 */
-		banner: string;
+		banner: string | null;
 		/**
 		 * Link do website da scan.
 		 * @since 0.1.0
@@ -79,7 +80,9 @@ export default class TmScan {
 
 		this.links = {
 			overview: `https://tsukimangas.com/scan/${data.url}`,
-			banner: `https://tsukimangas.com/scan/fundo/${data.cover}`,
+			banner: data.cover
+				? `https://tsukimangas.com/scan/fundo/${data.cover}`
+				: null,
 			website: data.website || null,
 			discord: data.discord || null,
 			facebook: data.facebook || null
@@ -155,6 +158,29 @@ export default class TmScan {
 
 		return results;
 	}
+
+	/**
+	 * Cria uma scan na Tsuki Mangás.
+	 * @param name Nome da scan.
+	 * @param url Link do site da scan.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async create(name: string, url?: string): Promise<TmScan> {
+		if (url && !isUrl(url, false)) throw new Error('O url não é válido.');
+
+		const payload = { name, website: url ?? '' },
+			request = (await apiRequest(
+				'tm',
+				'scans',
+				`criar a scan **${name}**`,
+				'POST',
+				payload
+			)) as ScanReceivedFromApi;
+
+		return new TmScan(request);
+	}
+
 }
 
 /**

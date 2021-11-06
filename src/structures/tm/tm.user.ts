@@ -54,7 +54,7 @@ export default class TmUser {
 	 * - 3 = Administrador
 	 * @since 0.1.0
 	 */
-	permission?: number;
+	permission?: ReceivedFromApi['permission'];
 	/**
 	 * Usuário banido?
 	 * @since 0.1.0
@@ -202,6 +202,36 @@ export default class TmUser {
 			)) as ReceivedFromApi
 		);
 	}
+
+	/**
+	 * Trocaa permissão de um usuário na Tsuki Mangás.
+	 * @param permission Nova permissão.
+	 * @returns Retorna esse classe preenchida.
+	 * @since 0.2.1
+	 */
+	async changePermission(
+		permission: ReceivedFromApi['permission']
+	): Promise<Required<TmUser>> {
+		if (!this.id || !this.username)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getByUsername' para isso."
+			);
+		else if (this.permission === permission)
+			throw new Error('O usuário já tem essa permissão.');
+
+		await apiRequest(
+			'tm',
+			`users/${this.id}`,
+			`atualizar a permissão de **${this.username}**`,
+			'POST',
+			{ permission }
+		);
+
+		this.permission = permission;
+
+		return this as Required<TmUser>;
+	}
+
 }
 
 /**
@@ -222,7 +252,7 @@ export type ReceivedFromApi = {
 	show_adult_content: 0 | 1;
 	show_trailers: 0 | 1;
 	vip: 0 | 1;
-	permission: number;
+	permission: 0 | 1 | 2 | 3;
 	banned: 0 | 1;
 	level: number;
 	experience: number;

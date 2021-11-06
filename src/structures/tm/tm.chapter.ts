@@ -264,6 +264,42 @@ export default class TmChapter {
 
 		return this;
 	}
+
+	/**
+	 * Editar uma versão de um capítulo da Tsuki Mangás.
+	 * @param versionIndex Posição da versão na array de versões.
+	 * @param newScans Nova array de scans da versão.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.1
+	 */
+	async editVersion(
+		versionIndex: number,
+		newScans: TmScan[]
+	): Promise<TmChapter> {
+		if (!this.ids || !this.versions)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
+			);
+		else if (!this.versions[versionIndex])
+			throw new Error('Parece que essa versão não existe.');
+
+		this.versions[versionIndex].scans = newScans;
+
+		const payloadObject = {};
+		for (const scan of newScans.values())
+			if (scan) Object.assign(payloadObject, { 'scans[]': scan.id });
+
+		await apiRequest(
+			'tm',
+			`chapter/versions/${this.versions[versionIndex].id}`,
+			`atualizar a versão **${this.versions[versionIndex].id}** do capítulo **${this.ids.chapter}** da página **${this.ids.page}**`,
+			'POST',
+			payloadObject
+		);
+
+		return this;
+	}
+
 		return this;
 	}
 }

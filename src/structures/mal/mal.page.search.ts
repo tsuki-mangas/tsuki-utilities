@@ -43,15 +43,10 @@ export default class MalPageSearch {
 
 	/**
 	 * Iniciar a busca.
-	 * @param beautify Embelezar os dados?
-	 * Se sim, todos os dados de utilizador (títulos, gêneros, sinopse, etc.) serão tratados.
-	 * Exemplo:
-	 *    - 'One Piece' vira 'One Piece'
-	 *    - ' One Piece ' vira 'One Piece'
 	 * @returns Retorna esta classe preenchida com as informações da obra.
 	 * @since 0.1.3
 	 */
-	async run(beautify = true): Promise<MalPageSearch> {
+	async run(): Promise<MalPageSearch> {
 		const request = (await apiRequest(
 			'mal',
 			`search/manga?q=${this.query}&limit=${this.limit}`,
@@ -67,15 +62,11 @@ export default class MalPageSearch {
 					cover: result.image_url
 				},
 
-				title: beautify ? format(result.title) : result.title,
+				title: format(result.title),
 
 				format: MalFormats[result.type],
 
-				synopsis: result.synopsis
-					? beautify
-						? format(result.synopsis)
-						: result.synopsis
-					: null,
+				synopsis: result.synopsis ? format(result.synopsis) : null,
 
 				volumes: result.volumes || null,
 				chapters: result.chapters || null

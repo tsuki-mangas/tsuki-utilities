@@ -207,6 +207,17 @@ export default class TmPage {
 	};
 
 	/**
+	 * Data na qual a páginda da obra foi criada.
+	 * @since 0.2.4
+	 */
+	createdAt?: Date | null;
+	/**
+	 * Data da última atualização da páginda da obra.
+	 * @since 0.2.4
+	 */
+	updatedAt?: Date;
+
+	/**
 	 * Constructor da classe.
 	 * @param data Dados recebidos (objeto) ao chamar a API.
 	 * @since 0.1.0
@@ -303,6 +314,11 @@ export default class TmPage {
 			today: data.views_day,
 			thisMonth: data.views_month
 		};
+
+		this.createdAt = data.created_at
+			? new Date(data.created_at.replace(/-/g, '/'))
+			: null;
+		this.updatedAt = new Date(data.updated_at.replace(/-g/, '/'));
 
 		return this as Required<TmPage>;
 	}
@@ -495,8 +511,8 @@ export type PageReceivedFromApi = {
 	views: number;
 	views_day: number;
 	views_month: number;
-	last_published_at: string;
-	created_at: string;
+	last_published_at: string | null;
+	created_at: string | null; // Sim, isto pode ser null
 	updated_at: string;
 	titles?: Array<{
 		title: string;

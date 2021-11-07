@@ -25,6 +25,7 @@ export * from './helpers/array';
 export * from './helpers/number';
 export * from './helpers/check';
 export * from './helpers/file';
+export * from './helpers/time';
 
 export * from './types/package.types';
 export * from './types/tm.types';

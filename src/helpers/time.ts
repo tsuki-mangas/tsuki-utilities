@@ -6,6 +6,7 @@
  * Exemplos:
  * 	- Normal: '7/11/2021 às 16:16:12'
  * 	- Longo: '7/11/2021 16:16:12 FR'
+ * @since 0.2.5
  */
 export function getCurrentTime(
 	country: 'FR' | 'BR' = 'FR',

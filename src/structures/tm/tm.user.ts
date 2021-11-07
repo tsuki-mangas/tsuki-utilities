@@ -204,6 +204,22 @@ export default class TmUser {
 	}
 
 	/**
+	 * Obter uma usuário da Tsuki Mangás por Id.
+	 * @param username Id do usuário.
+	 * @returns Retorna esta classe preenchida com as informações do usuário.
+	 * @since 0.2.4
+	 */
+	async getById(id: number): Promise<Required<TmUser>> {
+		return this.#buildClass(
+			(await apiRequest(
+				'tm',
+				`users/id/${id}`,
+				`obter o usuário **${id}**`
+			)) as ReceivedFromApi
+		);
+	}
+
+	/**
 	 * Trocaa permissão de um usuário na Tsuki Mangás.
 	 * @param permission Nova permissão.
 	 * @returns Retorna esse classe preenchida.

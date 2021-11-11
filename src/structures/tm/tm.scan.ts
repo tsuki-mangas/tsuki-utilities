@@ -60,7 +60,25 @@ export default class TmScan {
 	 * Membros da scan.
 	 * @since 0.1.0
 	 */
-	members?: TmUser[];
+	members?: Array<{
+		/**
+		 * Id do membro. Este Id é diferente do Id do usuário!
+		 * @since 0.2.8
+		 */
+		id: number;
+		/**
+		 * Permissão do membro.
+		 * - 1 = uploader
+		 * - 2 = líder
+		 * @since 0.2.8
+		 */
+		permission: 1 | 2;
+		/**
+		 * Usuário.
+		 * @since 0.1.0
+		 */
+		user: Required<TmUser>;
+	}>;
 
 	/**
 	 * Constructor da classe.
@@ -99,7 +117,11 @@ export default class TmScan {
 		this.members = [];
 		if (data.members)
 			for (const member of data.members.values())
-				this.members.push(new TmUser(member.user));
+				this.members.push({
+					id: member.id,
+					permission: member.role,
+					user: new TmUser(member.user) as Required<TmUser>
+				});
 
 		return this as Required<TmScan>;
 	}
@@ -213,6 +235,89 @@ export default class TmScan {
 
 		return this as Required<TmScan>;
 	}
+
+	/**
+	 * Dá ou edita a permissão de um usuário da Tsuki Mangás.
+	 * @param username Nome de usuário.
+	 * @param permission Permissão.
+	 * - 0 significa que é para tirar a permissão.
+	 * - 1 significa que é para dar (ou trocar) a permissão de membro comum.
+	 * - 2 significa que é para dar a permissão de líder.
+	 * @returns Retorna esta classe preenchida.
+	 * @since 0.2.8
+	 */
+	async changeUserPermission(
+		username: string,
+		permission: 0 | 1 | 2
+	): Promise<Required<TmScan>> {
+		if (!this.members || !this.name)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getById' ou 'getBySlug' para isso."
+			);
+
+		const memberIndex = this.members.findIndex(
+				(member) =>
+					format(member.user.username).toLowerCase() ===
+					format(username).toLowerCase()
+			),
+			member = this.members[memberIndex];
+		if (permission === 0 && !member)
+			throw new Error(
+				'Não consegui encontrar esse usuário na lista de membros da scan.'
+			);
+
+		async function deletePerm(obj: TmScan): Promise<void> {
+			try {
+				await obj.changeUserPermission(username, 0);
+			} catch {}
+		}
+
+		let request: ScanReceivedFromApi['members'][number] | undefined;
+		switch (permission) {
+			case 0: {
+				await apiRequest(
+					'tm',
+					`scans/members/${member.id}`,
+					`tirar a permissão de **${username}** da scan **${this.name}**`,
+					'DELETE'
+				);
+				this.members.splice(memberIndex, 1);
+				return this as Required<TmScan>;
+			}
+			case 1: {
+				if (member) await deletePerm(this);
+				request = (await apiRequest(
+					'tm',
+					'scans/members',
+					`dar ao **${username}** a permissão de upar na scan **${this.name}**`,
+					'POST',
+					{ scan_id: this.id, user: username }
+				)) as ScanReceivedFromApi['members'][number];
+
+				break;
+			}
+			case 2: {
+				if (member) await deletePerm(this);
+				request = (await apiRequest(
+					'tm',
+					'scans/members',
+					`dar ao **${username}** a permissão de líder da scan **${this.name}**`,
+					'POST',
+					{ scan_id: this.id, user: username, role: 2 }
+				)) as ScanReceivedFromApi['members'][number];
+
+				break;
+			}
+		}
+
+		this.members.push({
+			id: request.id,
+			permission: request.role,
+			user: new TmUser(request.user) as Required<TmUser>
+		});
+
+		return this as Required<TmScan>;
+	}
 }
 
 /**
@@ -230,6 +335,8 @@ export type ScanReceivedFromApi = {
 	discord: string;
 	facebook: string;
 	members: Array<{
+		id: number;
+		role: 1 | 2;
 		user: UserReceivedFromApi;
 	}>;
 };

@@ -142,11 +142,13 @@ export default class TmScan {
 	 * @since 0.2.6
 	 */
 	async getAll(): Promise<Array<Required<TmScan>>> {
-		return (await apiRequest(
-			'tc',
-			'scans',
-			'adquirir todas as scans'
-		)) as Array<Required<TmScan>>;
+		return (
+			(await apiRequest(
+				'tc',
+				'scans',
+				'adquirir todas as scans'
+			)) as ScansReceivedFromTc
+		).data;
 	}
 
 	/**
@@ -239,4 +241,8 @@ export type ScanReceivedFromApi = {
  */
 type SearchReceivedFromApi = {
 	data: ScanReceivedFromApi[];
+};
+
+type ScansReceivedFromTc = {
+	data: Array<Required<TmScan>>;
 };

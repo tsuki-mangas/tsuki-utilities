@@ -347,11 +347,13 @@ export default class TmPage {
 	 * @since 0.2.6
 	 */
 	async getAll(): Promise<Array<Required<TmPage>>> {
-		return (await apiRequest(
-			'tc',
-			'pages',
-			'Adquirir todas as páginas'
-		)) as Array<Required<TmPage>>;
+		return (
+			(await apiRequest(
+				'tc',
+				'pages',
+				'Adquirir todas as páginas'
+			)) as PagesReceivedFromTc
+		).data;
 	}
 
 	/**
@@ -360,11 +362,13 @@ export default class TmPage {
 	 * @since 0.2.6
 	 */
 	async getAllPartial(): Promise<PartialPage[]> {
-		return (await apiRequest(
-			'tc',
-			'pages/minimal',
-			'Adquirir parcialmente todas as páginas'
-		)) as PartialPage[];
+		return (
+			(await apiRequest(
+				'tc',
+				'pages/minimal',
+				'Adquirir parcialmente todas as páginas'
+			)) as PartialPagesReceivedFromTc
+		).data;
 	}
 
 	/**
@@ -557,4 +561,12 @@ export type PageReceivedFromApi = {
  */
 type SearchReceivedFromApi = {
 	data: PageReceivedFromApi[];
+};
+
+type PagesReceivedFromTc = {
+	data: Array<Required<TmPage>>;
+};
+
+type PartialPagesReceivedFromTc = {
+	data: PartialPage[];
 };

@@ -517,7 +517,6 @@ function generatePayloadObject(
 
 /**
  * Objeto recebido ao chamar a API.
- * @private
  * @since 0.1.0
  */
 export type PageReceivedFromApi = {

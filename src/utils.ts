@@ -5,6 +5,7 @@ import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
 import FormData from 'form-data';
 import { request } from 'https';
+import { request as httpRequest } from 'http';
 import {
 	AvailableWebsites,
 	AvailableWebsitesShort
@@ -87,6 +88,8 @@ function getHostname(website: AvailableWebsitesShort): string {
 	switch (website) {
 		case 'tm':
 			return 'tsukimangas.com';
+		case 'tc':
+			return process.env.TC_ADDRESS ?? '';
 		case 'md':
 			return 'api.mangadex.org';
 		case 'al':
@@ -107,6 +110,8 @@ function buildPath(website: AvailableWebsitesShort, endpoint: string): string {
 	switch (website) {
 		case 'tm':
 			return `/api/v2/${endpoint}`;
+		case 'tc':
+			return `/${endpoint}`;
 		case 'md':
 			return `/${endpoint}`;
 		case 'al':
@@ -127,6 +132,8 @@ function short2long(website: AvailableWebsitesShort): AvailableWebsites {
 	switch (website) {
 		case 'tm':
 			return 'Tsuki Mangás';
+		case 'tc':
+			return 'Tsuki Complements';
 		case 'md':
 			return 'MangaDex';
 		case 'al':
@@ -276,6 +283,12 @@ export async function apiRequest(
 			throw new Error('Token de block-bypass da Tsuki Mangás inválido!');
 		if (method !== 'GET' && !process.env.TM_TOKEN)
 			throw new Error('Token da Tsuki Mangás inválido!');
+	} else if (website === 'tc') {
+		await checkEnvFile();
+		if (!process.env.TC_ADDRESS)
+			throw new Error('Endereço da Tsuki Complements inválido!');
+		if (!process.env.TC_PORT)
+			throw new Error('Porta da Tsuki Complements inválida!');
 	}
 
 	activeRequests++;
@@ -288,7 +301,7 @@ export async function apiRequest(
 		);
 
 	const headers: Record<string, string> = {};
-	if (website === 'tm') {
+	if (website === 'tm' || website === 'tc') {
 		headers['Authorization'] = process.env.TM_TOKEN as string;
 		headers['Session-App-Key'] = process.env.TM_BB_TOKEN as string;
 		if (process.env.TM_RLB_TOKEN)
@@ -306,9 +319,10 @@ export async function apiRequest(
 	Object.assign(headers, additionalHeaders);
 
 	return new Promise(async (resolve, reject) => {
-		const req = request(
+		const req = (website === 'tc' ? httpRequest : request)(
 			{
 				hostname: getHostname(website),
+				port: website === 'tc' ? process.env.TC_PORT : null,
 				path: buildPath(website, encodeURI(endpoint)),
 				method,
 				headers

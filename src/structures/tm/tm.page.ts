@@ -299,9 +299,10 @@ export default class TmPage {
 
 		this.chapters = {
 			total: data.chapters_count,
-			lastPubishedAt: data.last_published_at
-				? new Date(data.last_published_at.replace(/-/g, '/'))
-				: null
+			lastPubishedAt:
+				data.last_published_at !== null
+					? new Date(data.last_published_at.replace(/-/g, '/'))
+					: null
 		};
 
 		this.rating = {

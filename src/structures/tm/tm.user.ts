@@ -220,7 +220,7 @@ export default class TmUser {
 	}
 
 	/**
-	 * Trocaa permissão de um usuário na Tsuki Mangás.
+	 * Troca a permissão de um usuário na Tsuki Mangás.
 	 * @param permission Nova permissão.
 	 * @returns Retorna esse classe preenchida.
 	 * @since 0.2.1

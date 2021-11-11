@@ -561,10 +561,20 @@ type SearchReceivedFromApi = {
 	data: PageReceivedFromApi[];
 };
 
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.2.6
+ */
 type PagesReceivedFromTc = {
 	data: Array<Required<TmPage>>;
 };
 
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.2.6
+ */
 type PartialPagesReceivedFromTc = {
 	data: PartialPage[];
 };

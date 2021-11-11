@@ -350,6 +350,11 @@ type SearchReceivedFromApi = {
 	data: ScanReceivedFromApi[];
 };
 
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.2.6
+ */
 type ScansReceivedFromTc = {
 	data: Array<Required<TmScan>>;
 };

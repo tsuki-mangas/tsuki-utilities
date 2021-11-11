@@ -1,4 +1,5 @@
 import { apiRequest, createFormData, format, formatArray } from '../../utils';
+import { PartialPage } from '../../types/tc.types';
 import {
 	TmFormats,
 	TmFormatsIdType,
@@ -8,8 +9,7 @@ import {
 	TmDemographicsLabelType,
 	TmStatuses,
 	TmGenres,
-	TmGenresType,
-	PartialPage
+	TmGenresType
 } from '../../types/tm.types';
 
 /**

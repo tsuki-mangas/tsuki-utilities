@@ -49,6 +49,7 @@ export type TmDemographicsIdType = 1 | 2 | 3 | 4;
 /**
  * Gêneros oficiais da Tsuki Mangás.
  * Última atualização: 14/08/2021.
+ * @since 0.1.0
  */
 export enum TmGenres {
 	'4-Koma',

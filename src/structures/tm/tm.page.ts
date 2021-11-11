@@ -8,7 +8,8 @@ import {
 	TmDemographicsLabelType,
 	TmStatuses,
 	TmGenres,
-	TmGenresType
+	TmGenresType,
+	PartialPage
 } from '../../types/tm.types';
 
 /**
@@ -351,6 +352,19 @@ export default class TmPage {
 			'pages',
 			'Adquirir todas as páginas'
 		)) as Array<Required<TmPage>>;
+	}
+
+	/**
+	 * Adquirir parcialmente todas as páginas da Tsuki Mangás.
+	 * @returns Retorna uma array de classes PartialPage.
+	 * @since 0.2.6
+	 */
+	async getAllPartial(): Promise<PartialPage[]> {
+		return (await apiRequest(
+			'tc',
+			'pages/minimal',
+			'Adquirir parcialmente todas as páginas'
+		)) as PartialPage[];
 	}
 
 	/**

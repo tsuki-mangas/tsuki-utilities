@@ -133,3 +133,19 @@ export enum TmGenres {
 	'Zumbis'
 }
 export type TmGenresType = keyof typeof TmGenres;
+
+/**
+ * Todas as possíveis permissões de usuário na Tsuki Mangás.
+ * @since 0.2.8
+ */
+export enum TmPermissions {
+	'Tsuki' = 3,
+	'Staff' = 2,
+	'Novato' = 2, // Sim, a permissão do novato é igual à da staff.
+	'Normal' = 0
+}
+export type TmPermissionsLabelType = keyof typeof TmPermissions;
+/**
+ * Mesmo motivo do TmFormatsIdType.
+ */
+export type TmPermissionsIdType = 1 | 2 | 3 | 4;

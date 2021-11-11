@@ -210,8 +210,8 @@ export default class AlPage {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	#buildClass(received: ReceivedFromApi): Required<AlPage> {
-		const data = received.data.Media;
+	#buildClass(data: ReceivedFromApi['data']['Media']): Required<AlPage> {
+		console.log(data);
 
 		this.ids = {
 			al: data.id,
@@ -320,11 +320,40 @@ export default class AlPage {
 			};
 
 		return this.#buildClass(
-			(await apiRequest('al', '', `obra ${id}`, 'POST', {
-				query,
-				variables
-			})) as ReceivedFromApi
+			(
+				(await apiRequest('al', '', `obra **${id}**`, 'POST', {
+					query,
+					variables
+				})) as ReceivedFromApi
+			).data.Media
 		);
+	}
+
+	/**
+	 * Procurar alguma obra na Tsuki Mangás.
+	 * @param query Input. Texto a procurar.
+	 * @param page Página da pesquisa.
+	 * @returns Retorna uma array de classes.
+	 * @since 0.2.9
+	 */
+	async search(query: string, page = 1): Promise<Array<Required<AlPage>>> {
+		const alQuery =
+				'query ($page: Int, $perPage: Int, $search: String) { Page(page: $page, perPage: $perPage) { media(search: $search, type: MANGA, sort: SEARCH_MATCH) { id idMal title { romaji english native } synonyms trailer { id site } coverImage { extraLarge large medium } bannerImage staff { edges { node { name { first middle last full native } } role } } format countryOfOrigin isAdult status description genres tags { id name } chapters volumes meanScore popularity } } }',
+			variables = {
+				page,
+				perPage: 20,
+				search: query
+			},
+			request = (await apiRequest('al', '', `procurar **${query}**`, 'POST', {
+				query: alQuery,
+				variables
+			})) as SearchReceivedFromApi,
+			results: Array<Required<AlPage>> = [];
+
+		for (const result of request.data.Page.media.values())
+			results.push(this.#buildClass(result));
+
+		return results;
 	}
 }
 
@@ -416,6 +445,19 @@ type ReceivedFromApi = {
 			volumes: number | null;
 			popularity: number;
 			meanScore: number | null;
+		};
+	};
+};
+
+/**
+ * Objeto recebido ao chamar a API.
+ * @private
+ * @since 0.2.9
+ */
+type SearchReceivedFromApi = {
+	data: {
+		Page: {
+			media: Array<ReceivedFromApi['data']['Media']>;
 		};
 	};
 };

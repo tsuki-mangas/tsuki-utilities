@@ -341,6 +341,19 @@ export default class TmPage {
 	}
 
 	/**
+	 * Adquirir todas as páginas da Tsuki Mangás.
+	 * @returns Retorna uma array de classes.
+	 * @since 0.2.6
+	 */
+	async getAll(): Promise<Array<Required<TmPage>>> {
+		return (await apiRequest(
+			'tc',
+			'pages',
+			'Adquirir todas as páginas'
+		)) as Array<Required<TmPage>>;
+	}
+
+	/**
 	 * Procurar alguma obra na Tsuki Mangás.
 	 * @param query Input. Texto a procurar.
 	 * @returns Retorna uma array de classes.

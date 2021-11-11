@@ -1,6 +1,6 @@
 import TmUser, { ReceivedFromApi as UserReceivedFromApi } from './tm.user';
 import { format, apiRequest } from '../../utils';
-import { isUrl } from '../..';
+import { isUrl } from '../../helpers/check';
 
 /**
  * Classe de interação com uma scan da Tsuki Mangás.
@@ -134,6 +134,19 @@ export default class TmScan {
 				`obter a scan **${slug}**`
 			)) as ScanReceivedFromApi
 		);
+	}
+
+	/**
+	 * Adquirir todas as scans da Tsuki Mangás.
+	 * @returns Retorna uma array de classes.
+	 * @since 0.2.6
+	 */
+	async getAll(): Promise<Array<Required<TmScan>>> {
+		return (await apiRequest(
+			'tc',
+			'scans',
+			'adquirir todas as scans'
+		)) as Array<Required<TmScan>>;
 	}
 
 	/**

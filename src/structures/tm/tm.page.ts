@@ -300,10 +300,9 @@ export default class TmPage {
 
 		this.chapters = {
 			total: data.chapters_count,
-			lastPubishedAt:
-				data.last_published_at !== null
-					? new Date(data.last_published_at.replace(/-/g, '/'))
-					: null
+			lastPubishedAt: data.last_published_at
+				? new Date(data.last_published_at.toString().replace(/-/g, '/'))
+				: null
 		};
 
 		this.rating = {
@@ -318,9 +317,9 @@ export default class TmPage {
 		};
 
 		this.createdAt = data.created_at
-			? new Date(data.created_at.replace(/-/g, '/'))
+			? new Date(data.created_at.toString().replace(/-/g, '/'))
 			: null;
-		this.updatedAt = new Date(data.updated_at.replace(/-g/, '/'));
+		this.updatedAt = new Date(data.updated_at.toString().replace(/-g/, '/'));
 
 		return this as Required<TmPage>;
 	}
@@ -542,9 +541,9 @@ export type PageReceivedFromApi = {
 	views: number;
 	views_day: number;
 	views_month: number;
-	last_published_at: string | null;
-	created_at: string | null; // Sim, isto pode ser null
-	updated_at: string;
+	last_published_at: Date | null;
+	created_at: Date | null; // Sim, isto pode ser null
+	updated_at: Date;
 	titles?: Array<{
 		title: string;
 	}>;

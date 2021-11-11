@@ -88,13 +88,13 @@ export default class TmScan {
 			banner: data.cover
 				? `https://tsukimangas.com/scan/fundo/${data.cover}`
 				: null,
-			website: format(data.website) || null,
-			discord: format(data.discord) || null,
-			facebook: format(data.facebook) || null
+			website: data.website ? format(data.website) : null,
+			discord: data.discord ? format(data.discord) : null,
+			facebook: data.facebook ? format(data.facebook) : null
 		};
 
 		this.name = format(data.name);
-		this.about = format(data.description) || null;
+		this.about = data.description ? format(data.description) : null;
 
 		this.members = [];
 		if (data.members)

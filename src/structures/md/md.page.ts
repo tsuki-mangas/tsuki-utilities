@@ -178,11 +178,9 @@ export default class MdPage {
 	 * @returns Retorna esta classe preenchida.
 	 * @since 0.2.1
 	 */
-	#buildClass(received: PageReceivedFromApi): Required<MdPage> {
-		const { data } = received;
-
+	#buildClass(data: PageReceivedFromApi['data']): Required<MdPage> {
 		this.ids = {
-			md: received.data.id,
+			md: data.id,
 			al: Number(data.attributes.links.al)
 				? Number(data.attributes.links.al)
 				: null,
@@ -271,10 +269,11 @@ export default class MdPage {
 				languageObject.twoLetters === data.attributes.originalLanguage
 		);
 		this.status = MdStatuses[data.attributes.status] || null;
-		this.synopsis =
-			format(data.attributes.description['pt-br']) ||
-			format(data.attributes.description['en']) ||
-			null;
+		this.synopsis = data.attributes.description['pt-br']
+			? format(data.attributes.description['pt-br'])
+			: data.attributes.description['en']
+			? format(data.attributes.description['en'])
+			: null;
 
 		this.genres = [];
 		for (const genre of data.attributes.tags.values())
@@ -291,8 +290,8 @@ export default class MdPage {
 				this.genres.push('Ecchi');
 		}
 
-		this.lastVolume = data.attributes.lastVolume;
-		this.lastChapter = data.attributes.lastChapter;
+		this.lastVolume = data.attributes.lastVolume || null;
+		this.lastChapter = data.attributes.lastChapter || null;
 
 		return this as Required<MdPage>;
 	}
@@ -305,11 +304,13 @@ export default class MdPage {
 	 */
 	async get(uuid: string): Promise<Required<MdPage>> {
 		return this.#buildClass(
-			(await apiRequest(
-				'md',
-				`manga/${uuid}?includes[]=author&includes[]=artist&includes[]=cover_art`,
-				`obter a obra com UUID **${uuid}**`
-			)) as PageReceivedFromApi
+			(
+				(await apiRequest(
+					'md',
+					`manga/${uuid}?includes[]=author&includes[]=artist&includes[]=cover_art`,
+					`obter a obra com UUID **${uuid}**`
+				)) as PageReceivedFromApi
+			).data
 		);
 	}
 
@@ -326,7 +327,7 @@ export default class MdPage {
 			)) as SearchReceivedFromApi,
 			results: Array<Required<MdPage>> = [];
 
-		for (const result of request.results.values())
+		for (const result of request.data.values())
 			results.push(this.#buildClass(result));
 
 		return results;
@@ -399,5 +400,5 @@ type PageReceivedFromApi = {
  * @since 0.1.3
  */
 type SearchReceivedFromApi = {
-	results: PageReceivedFromApi[];
+	data: Array<PageReceivedFromApi['data']>;
 };

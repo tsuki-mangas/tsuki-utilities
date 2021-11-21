@@ -104,7 +104,7 @@ export default class TmChapter {
 			uploader: data.user_id
 		};
 
-		this.title = format(data.title) || null;
+		this.title = data.title ? format(data.title) : null;
 		this.number = data.number;
 
 		if (data.author)

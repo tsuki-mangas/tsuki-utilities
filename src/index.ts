@@ -16,9 +16,8 @@ export { default as MdPage } from './structures/md/md.page';
 export { default as AlPage } from './structures/al/al.page';
 export { default as MalPage } from './structures/mal/mal.page';
 
-// export { default as MalPageSearch } from './structures/mal/mal.page.search';
-
-export { default as ApiRequestError } from './structures/api.request.error';
+export { default as ApiRequestError } from './structures/apiRequest.error';
+export { default as ArgumentError } from './structures/argument.error';
 
 export * from './helpers/string';
 export * from './helpers/array';

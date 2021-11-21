@@ -1,4 +1,5 @@
 import { apiRequest, format } from '../../utils';
+import ArgumentError from '../argument.error';
 
 /**
  * Classe de interação com um usuário da Tsuki Mangás.
@@ -229,11 +230,11 @@ export default class TmUser {
 		permission: ReceivedFromApi['permission']
 	): Promise<Required<TmUser>> {
 		if (!this.id || !this.username)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getByUsername' para isso."
 			);
 		else if (this.permission === permission)
-			throw new Error('O usuário já tem essa permissão.');
+			throw new ArgumentError('O usuário já tem essa permissão.');
 
 		await apiRequest(
 			'tm',
@@ -256,13 +257,13 @@ export default class TmUser {
 	 */
 	async ban(unban = false): Promise<Required<TmUser>> {
 		if (!this.username || this.banned === undefined)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getByUsername' para isso."
 			);
 		else if (!unban && this.banned)
-			throw new Error('O usuário já está banido.');
+			throw new ArgumentError('O usuário já está banido.');
 		else if (unban && this.banned === false)
-			throw new Error('O usuário não está banido.');
+			throw new ArgumentError('O usuário não está banido.');
 
 		await apiRequest(
 			'tm',

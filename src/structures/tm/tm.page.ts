@@ -1,5 +1,6 @@
 import { apiRequest, createFormData, format, formatArray } from '../../utils';
 import { PartialPage } from '../../types/tc.types';
+import ArgumentError from '../argument.error';
 import {
 	TmFormats,
 	TmFormatsIdType,
@@ -419,7 +420,7 @@ export default class TmPage {
 		bannerPath?: string
 	): Promise<Required<TmPage>> {
 		if (!this.ids?.tm)
-			throw new Error(
+			throw new ArgumentError(
 				"Você tem que usar o método 'get' para preencher este objeto ou então preenchê-lo manualmente."
 			);
 
@@ -444,7 +445,7 @@ export default class TmPage {
 	 */
 	async delete(id?: number): Promise<Required<TmPage>> {
 		if (!id && !this.ids?.tm)
-			throw new Error('Preciso de um Id antes de deletar uma página.');
+			throw new ArgumentError('Preciso de um Id antes de deletar uma página.');
 
 		await apiRequest(
 			'tm',

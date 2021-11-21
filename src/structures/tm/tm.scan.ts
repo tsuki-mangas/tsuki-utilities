@@ -1,5 +1,6 @@
 import TmUser, { ReceivedFromApi as UserReceivedFromApi } from './tm.user';
 import { format, apiRequest } from '../../utils';
+import ArgumentError from '../argument.error';
 import { isUrl } from '../../helpers/check';
 
 /**
@@ -201,7 +202,8 @@ export default class TmScan {
 	 * @since 0.2.1
 	 */
 	async create(name: string, url?: string): Promise<Required<TmScan>> {
-		if (url && !isUrl(url, false)) throw new Error('O url não é válido.');
+		if (url && !isUrl(url, false))
+			throw new ArgumentError('O url não é válido.');
 
 		const payload = { name, website: url ?? '' },
 			request = (await apiRequest(
@@ -222,7 +224,7 @@ export default class TmScan {
 	 */
 	async delete(): Promise<Required<TmScan>> {
 		if (!this.id || !this.name)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getById', 'getBySlug' ou 'search' para isso."
 			);
 
@@ -251,7 +253,7 @@ export default class TmScan {
 		permission: 0 | 1 | 2
 	): Promise<Required<TmScan>> {
 		if (!this.members || !this.name)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getById' ou 'getBySlug' para isso."
 			);
 
@@ -262,7 +264,7 @@ export default class TmScan {
 			),
 			member = this.members[memberIndex];
 		if (permission === 0 && !member)
-			throw new Error(
+			throw new ArgumentError(
 				'Não consegui encontrar esse usuário na lista de membros da scan.'
 			);
 

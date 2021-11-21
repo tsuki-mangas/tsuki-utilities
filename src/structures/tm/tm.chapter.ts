@@ -1,6 +1,7 @@
 import TmUser, { ReceivedFromApi as TmUserReceivedFromApi } from './tm.user';
 import { apiRequest, createFormData, format } from '../../utils';
 import { PageReceivedFromApi } from './tm.page';
+import ArgumentError from '../argument.error';
 import TmScan, {
 	ScanReceivedFromApi as TmScanReceivedFromApi
 } from './tm.scan';
@@ -251,11 +252,11 @@ export default class TmChapter {
 		number?: string
 	): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.ids.page || !this.number)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
 			);
 		else if (!title && !number)
-			throw new Error(
+			throw new ArgumentError(
 				'Você tem que definir ou o título ou o número do capítulo.'
 			);
 
@@ -291,11 +292,11 @@ export default class TmChapter {
 		newScans: Array<Required<TmScan>>
 	): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.versions)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
 			);
 		else if (!this.versions[versionIndex])
-			throw new Error('Parece que essa versão não existe.');
+			throw new ArgumentError('Parece que essa versão não existe.');
 
 		this.versions[versionIndex].scans = newScans;
 
@@ -322,11 +323,11 @@ export default class TmChapter {
 	 */
 	async delete(versionIndex?: number): Promise<Required<TmChapter>> {
 		if (!this.ids || !this.versions)
-			throw new Error(
+			throw new ArgumentError(
 				"A classe tem que ser preenchida primeiro. Use o método 'getPartial' ou 'getAll' para isso."
 			);
 		else if (versionIndex && !this.versions[versionIndex])
-			throw new Error('Parece que essa versão não existe.');
+			throw new ArgumentError('Parece que essa versão não existe.');
 
 		await apiRequest(
 			'tm',

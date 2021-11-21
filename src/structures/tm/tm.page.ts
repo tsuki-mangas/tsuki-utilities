@@ -365,7 +365,7 @@ export default class TmPage {
 			(await apiRequest(
 				'tc',
 				'pages/minimal',
-				'Adquirir parcialmente todas as páginas'
+				'adquirir parcialmente todas as páginas'
 			)) as PartialPagesReceivedFromTc
 		).data;
 	}
@@ -428,7 +428,7 @@ export default class TmPage {
 			request = (await apiRequest(
 				'tm',
 				`mangas/${this.ids?.tm}`,
-				`editar a página de **${this.titles?.principal}**`,
+				`editar a página **${this.titles?.principal}**`,
 				'POST',
 				payload
 			)) as PageReceivedFromApi;

@@ -214,7 +214,7 @@ export default class TmUser {
 			(await apiRequest(
 				'tm',
 				`users/id/${id}`,
-				`obter o usuário **${id}**`
+				`obter o usuário com Id **${id}**`
 			)) as ReceivedFromApi
 		);
 	}
@@ -255,7 +255,10 @@ export default class TmUser {
 	 * @since 0.2.1
 	 */
 	async ban(unban = false): Promise<Required<TmUser>> {
-		if (!this.username || this.banned === undefined) throw new Error('foa');
+		if (!this.username || this.banned === undefined)
+			throw new Error(
+				"A classe tem que ser preenchida primeiro. Use o método 'getByUsername' para isso."
+			);
 		else if (!unban && this.banned)
 			throw new Error('O usuário já está banido.');
 		else if (unban && this.banned === false)

@@ -321,7 +321,7 @@ export default class AlPage {
 
 		return this.#buildClass(
 			(
-				(await apiRequest('al', '', `obra **${id}**`, 'POST', {
+				(await apiRequest('al', '', `obter a obra com Id **${id}**`, 'POST', {
 					query,
 					variables
 				})) as ReceivedFromApi

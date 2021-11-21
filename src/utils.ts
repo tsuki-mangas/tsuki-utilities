@@ -1,4 +1,4 @@
-import ApiRequestError from './structures/api.request.error';
+import ApiRequestError from './structures/apiRequest.error';
 import { dirname, join, parse } from 'path';
 import { IncomingMessage } from 'http';
 import { readFile } from 'fs/promises';

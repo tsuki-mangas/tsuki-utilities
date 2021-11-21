@@ -315,7 +315,7 @@ export default class MdPage {
 	}
 
 	/**
-	 * Procurar alguma obra na Tsuki Mangás.
+	 * Procurar alguma obra na MangaDex.
 	 * @param query Input. Texto a procurar.
 	 * @returns Array de classes.
 	 */
@@ -335,7 +335,7 @@ export default class MdPage {
 }
 
 /**
- * Verifica se um gênero é válido na Tsuki Mangás.
+ * Verifica se um gênero da MangaDex é válido na Tsuki Mangás.
  * @private
  * @param input Possível gênero.
  * @returns Retorna um boolean. Se for true, é porque o 'input' é um válido; se não, é porque não é.

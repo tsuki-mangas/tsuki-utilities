@@ -98,6 +98,8 @@ export default class TmChapter {
 	 * @since 0.2.1
 	 */
 	#buildClass(data: DataType): Required<TmChapter> {
+		console.log(data);
+
 		this.ids = {
 			page: data.manga_id,
 			chapter: data.id,
@@ -142,7 +144,7 @@ export default class TmChapter {
 			results: Array<Required<TmChapter>> = [];
 
 		for (const result of request.values())
-			results.push(this.#buildClass(result));
+			results.push(new TmChapter(result) as Required<TmChapter>);
 
 		return results;
 	}
@@ -172,7 +174,7 @@ export default class TmChapter {
 			results: Array<Required<TmChapter>> = [];
 
 		for (const result of request.data.values())
-			results.push(this.#buildClass(result));
+			results.push(new TmChapter(result) as Required<TmChapter>);
 
 		return results;
 	}

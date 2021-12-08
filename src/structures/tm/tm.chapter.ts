@@ -98,8 +98,6 @@ export default class TmChapter {
 	 * @since 0.2.1
 	 */
 	#buildClass(data: DataType): Required<TmChapter> {
-		console.log(data);
-
 		this.ids = {
 			page: data.manga_id,
 			chapter: data.id,

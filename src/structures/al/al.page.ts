@@ -211,8 +211,6 @@ export default class AlPage {
 	 * @since 0.2.1
 	 */
 	#buildClass(data: ReceivedFromApi['data']['Media']): Required<AlPage> {
-		console.log(data);
-
 		this.ids = {
 			al: data.id,
 			mal: data.idMal
